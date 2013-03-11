@@ -40,6 +40,45 @@ mongodb.MongoClient.connect('mongodb://127.0.0.1:3002/meteor', function (err, db
       res.json(item);
     });
   });
+
+  app.post('/timelines', function (req, res) {
+    db.collection('timelines').insert(req.body, {w: 1}, function (err, result) {
+      res.json(result[0]);
+    });
+  });
+
+  app.put('/timelines/:id', function (req, res) {
+    db.collection('timelines').update({
+        _id: new ObjectID(req.params.id)
+      },
+      req.body,
+      {w: 1},
+      function (err, result) {
+        if (err) {
+          res.send(500, err);
+        } else if (result === 0) {
+          res.send(404);
+        } else {
+          res.send(204);
+        }
+      });
+  });
+
+  app.delete('/timelines/:id', function (req, res) {
+    db.collection('timelines').remove({
+        _id: new ObjectID(req.params.id)
+      },
+      {w: 1},
+      function (err, result) {
+        if (err) {
+          res.send(500, err);
+        } else if (result === 0) {
+          res.send(404);
+        } else {
+          res.send(204);
+        }
+      });
+  });
 });
 
 http.createServer(app).listen(app.get('port'), function () {
