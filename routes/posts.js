@@ -23,3 +23,14 @@ exports.create = function (req, res) {
     }
   });
 }
+
+exports.delete = function (req, res) {
+    TextPost.findById(req.params.id, function (err, textPost) {
+      if (!textPost) res.send(404);
+      else {
+        textPost.remove(function () {
+          res.send(204);
+        });
+      }
+    });
+}

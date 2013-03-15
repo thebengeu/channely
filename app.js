@@ -45,6 +45,7 @@ db.once('open', function callback () {
   // Text Post routes
   app.get('/timelines/:id/posts', posts.index);
   app.post('/posts', posts.create); // temporary endpoint, please change url to reflect text, image
+  app.delete('/posts/:id', posts.delete);
 });
 
 http.createServer(app).listen(app.get('port'), function () {
