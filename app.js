@@ -4,8 +4,9 @@ var mongoose = require('mongoose');
 var path = require('path');
 
 // Routing imports
-var timelines = require('./routes/timelines');
-var events = require('./routes/events');
+var timelines = require('./routes/timelines'),
+    events = require('./routes/events'),
+    posts = require('./routes/posts');
 
 var app = express();
 
@@ -40,6 +41,10 @@ db.once('open', function callback () {
   app.get('/timelines/:id/events', events.index);
   app.post('/events', events.create); 
   app.delete('/events/:id', events.delete);
+
+  // Text Post routes
+  app.get('/timelines/:id/posts', posts.index);
+  app.post('/posts', posts.create); // temporary endpoint, please change url to reflect text, image
 });
 
 http.createServer(app).listen(app.get('port'), function () {

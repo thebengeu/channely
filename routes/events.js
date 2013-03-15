@@ -13,9 +13,9 @@ exports.index = function (req, res) {
 
 exports.create = function (req, res) {
   Timeline.findById(req.body.timelineID, function (err, timeline) {
-    if (!err && !timeline) res.send(404);
+    if (!err && !timeline) res.send(404, "No such timeline exists!");
     else if (err) {
-      res.json(500, err);
+      res.send(500, err);
     } else {
       // todo: date validations (end > start)
       var tmpEvent = new Event({
