@@ -21,13 +21,6 @@ app.configure('development', function () {
 
 mongoose.connect('mongodb://127.0.0.1:3002/meteor');
 
-var timelineSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
-});
-
-var Timeline = mongoose.model('Timeline', timelineSchema)
-
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
