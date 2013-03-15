@@ -11,5 +11,5 @@ var textPostSchema = new mongoose.Schema({
 var textPostModel = mongoose.model('TextPost', textPostSchema);
 
 module.exports = {
-  TextPost = textPostModel
+  TextPost : textPostModel
 };
