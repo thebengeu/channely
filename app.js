@@ -5,6 +5,7 @@ var path = require('path');
 
 // Routing imports
 var timelines = require('./routes/timelines');
+var events = require('./routes/events');
 
 var app = express();
 
@@ -28,11 +29,17 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
 
+  // Timeline routes
   app.get('/timelines', timelines.index);
   app.get('/timelines/:id', timelines.show);
   app.post('/timelines', timelines.create);
   app.put('/timelines/:id', timelines.update);
   app.delete('/timelines/:id', timelines.delete);
+
+  // Event routes
+  app.get('/timelines/:id/events', events.index);
+  app.post('/events', events.create); 
+  app.delete('/events/:id', events.delete);
 });
 
 http.createServer(app).listen(app.get('port'), function () {
