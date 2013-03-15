@@ -17,7 +17,7 @@ exports.show = function (req, res) {
 exports.create = function (req, res) {
     var timeline = new Timeline(req.body);
     timeline.save(function (err) {
-      err ? res.send(422, err) : res.send(timeline);
+      err ? res.send(422, err) : res.send(201, timeline);
     });
 }
 

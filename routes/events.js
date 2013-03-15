@@ -32,7 +32,7 @@ exports.create = function (req, res) {
       });
 
       tmpEvent.save(function (err) {
-        err ? res.send(422, err) : res.send(tmpEvent);
+        err ? res.send(422, err) : res.send(201, tmpEvent);
       });
     }
   });
