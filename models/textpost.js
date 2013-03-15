@@ -7,3 +7,9 @@ var textPostSchema = new mongoose.Schema({
     time: { type: Date, default: Date.now },
     content: { type: String, required: true, trim: true }
 });
+
+var textPostModel = mongoose.model('TextPost', textPostSchema);
+
+module.exports = {
+  TextPost = textPostModel
+};
