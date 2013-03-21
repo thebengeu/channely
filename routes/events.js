@@ -26,11 +26,6 @@ exports.create = function (req, res) {
         _timeline: timeline._id
       });
 
-      timeline.events.push(tmpEvent);
-      timeline.save(function (err) {
-        if (err) res.send(422, err);
-      });
-
       tmpEvent.save(function (err) {
         err ? res.send(422, err) : res.send(201, tmpEvent);
       });
@@ -45,15 +40,7 @@ exports.delete = function (req, res) {
       if (!evnt) {
         res.send(404);
       } else {
-
-        // remove event from timeline.events
-        var timeline = evnt._timeline;
-        var index = timeline.events.indexOf(evnt._id);
-        timeline.events.splice(index, 1);
-        timeline.save(function (err) {
-          if (err) res.send(422, err);
-        });
-        
+       
         // delete event object
         evnt.remove(function () {
           res.send(204);
