@@ -2,7 +2,7 @@ var mongoose = require('mongoose')
   , Schema = mongoose.Schema;
 
 var eventSchema = new mongoose.Schema({
-  _timeline: { type: Schema.Types.ObjectId, ref:'Timeline' },
+  _channel: { type: Schema.Types.ObjectId, ref:'Channel' },
   name: { type: String, required: true },
   startDateTime: { type: Date, required: true },
   endDateTime: { type: Date, required: true },

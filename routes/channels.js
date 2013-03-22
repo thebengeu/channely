@@ -14,6 +14,8 @@ exports.show = function (req, res) {
     });
 }
 
+// Channel create, params:
+// name:
 exports.create = function (req, res) {
     var channel = new Channel(req.body);
     channel.save(function (err) {

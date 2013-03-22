@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var path = require('path');
 
 // Routing imports
-var timelines = require('./routes/timelines'),
+var channels = require('./routes/channels'),
     events = require('./routes/events'),
     posts = require('./routes/posts');
 
@@ -30,20 +30,20 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
 
-  // Timeline routes
-  app.get('/timelines', timelines.index);
-  app.get('/timelines/:id', timelines.show);
-  app.post('/timelines', timelines.create);
-  app.put('/timelines/:id', timelines.update);
-  app.delete('/timelines/:id', timelines.delete);
+  // Channel routes
+  app.get('/channels', channels.index);
+  app.get('/channels/:id', channels.show);
+  app.post('/channels', channels.create);
+  app.put('/channels/:id', channels.update);
+  app.delete('/channels/:id', channels.delete);
 
   // Event routes
-  app.get('/timelines/:id/events', events.index);
+  app.get('/channels/:id/events', events.index);
   app.post('/events', events.create); 
   app.delete('/events/:id', events.delete);
 
   // Text Post routes
-  app.get('/timelines/:id/posts', posts.index);
+  app.get('/channels/:id/posts', posts.index);
   app.post('/posts', posts.create); // temporary endpoint, please change url to reflect text, image
   app.delete('/posts/:id', posts.delete);
 });

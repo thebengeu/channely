@@ -1,19 +1,18 @@
 var Event = require('../models/event').Event
-var Timeline = require('../models/timeline').Timeline;
+var Channel = require('../models/channel').Channel;
 
-// Endpoint: /timelines/:id/events
-// Gets all events for a particular timeline
+// Endpoint: /channels/:id/events
+// Gets all events for a particular channel
 exports.index = function (req, res) {
-  Timeline.findById(req.params.id).populate('events')
-    .exec(function (err, timeline) {
+  Event.find({ _channel: req.params.id }, function (err, events) {
       // todo - error handling can be better
-      err ? res.send(500, err) : res.json(timeline.events);
+      err ? res.send(500, err) : res.json(events);
     })
 }
 
 exports.create = function (req, res) {
-  Timeline.findById(req.body.timelineID, function (err, timeline) {
-    if (!err && !timeline) res.send(404, "No such timeline exists!");
+  Channel.findById(req.body.channelID, function (err, channel) {
+    if (!err && !channel) res.send(404, "No such channel exists!");
     else if (err) {
       res.send(500, err);
     } else {
@@ -23,7 +22,7 @@ exports.create = function (req, res) {
         startDateTime: req.body.startDateTime,
         endDateTime: req.body.endDateTime, 
         details: req.body.details,
-        _timeline: timeline._id
+        _channel: channel._id
       });
 
       tmpEvent.save(function (err) {
@@ -34,14 +33,10 @@ exports.create = function (req, res) {
 }
 
 exports.delete = function (req, res) {
-  Event.findById(req.params.id)
-    .populate('_timeline')
-    .exec(function (err, evnt) {
+  Event.findById(req.params.id, function (err, evnt) {
       if (!evnt) {
         res.send(404);
       } else {
-       
-        // delete event object
         evnt.remove(function () {
           res.send(204);
         });

@@ -3,7 +3,7 @@ var mongoose = require('mongoose')
 
 var textPostSchema = new mongoose.Schema({
     // owner
-    _timeline: { type: Schema.Types.ObjectId, ref:'Timeline' },
+    _channel: { type: Schema.Types.ObjectId, ref:'Channel' },
     time: { type: Date, default: Date.now },
     content: { type: String, required: true, trim: true }
 });
