@@ -1,0 +1,62 @@
+<head>
+  <title>Channely</title>
+</head>
+
+<body>
+  <div class="pull-right">
+    {{loginButtons align="right"}}
+  </div>
+  {{renderPage}}
+</body>
+
+<template name="channels">
+  <div class="container">
+    <h3>Channels</h3>
+    {{#each channels}}
+    <div class="channel">
+      <a href="/channels/{{toHexString _id}}">
+        {{name}}
+      </a>
+    </div>
+    {{/each}}
+    <a href="/channels/add">Add Channel</a>
+  </div>
+</template>
+
+<template name="channels_add">
+  <div class="container">
+    <form>
+      <fieldset>
+        <legend>Add Channel</legend>
+        <label>Name</label>
+        <input class="name" type="text" placeholder="Channel Name">
+        <label>Description</label>
+        <textarea class="description" placeholder="Channel Description"></textarea>
+        <button class="btn cancel" type="button">Cancel</button>
+        <button class="btn btn-primary add" type="button">Add Channel</button>
+      </fieldset>
+    </form>
+  </div>
+</template>
+
+<template name="channel">
+  <div id="wrap">
+    <div class="container">
+      <div class="posts">
+        {{#each posts}}
+        <div class="post">
+          <span class="time">{{formatTime time}}</span> :
+          <span class="content">{{content}}</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <div class="container">
+      <form>
+        <input class="post_add" type="text" placeholder="Say something! [=">
+      </form>
+    </div>
+  </div>
+</template>
