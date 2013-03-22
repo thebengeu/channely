@@ -1,0 +1,9 @@
+{
+  "meteor": {
+    "tag": "v0.5.9"
+  },
+  "packages": {
+    "router": {},
+    "moment": {}
+  }
+}
