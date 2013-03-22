@@ -38,7 +38,8 @@ Template.channels_add.events({
 });
 
 Template.channel.posts = function () {
-  return TextPosts.find({_channel: Session.get('currentChannelId')});
+  return TextPosts.find({_channel: Session.get('currentChannelId')},
+    {sort: {time: 1}});
 };
 
 Template.channel.events({
