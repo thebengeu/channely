@@ -1,7 +1,8 @@
-var express = require('express');
-var http = require('http');
-var mongoose = require('mongoose');
-var path = require('path');
+var express = require('express'),
+    http = require('http'),
+    mongoose = require('mongoose'),
+    path = require('path'),
+    passport = require('passport');
 
 // Routing imports
 var channels = require('./routes/channels'),
