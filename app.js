@@ -25,7 +25,7 @@ app.configure('development', function () {
   app.use(express.errorHandler());
 });
 
-mongoose.connect(process.env.MONGO_URL || 'mongodb://127.0.0.1:3002/meteor');
+mongoose.connect(process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/meteor');
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
