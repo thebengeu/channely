@@ -8,7 +8,7 @@ var eventSchema = new mongoose.Schema({
   endDateTime: { type: Date, required: true },
   details: String, 
   // location name (optional?)
-  // location coords (optional)
+  location: { type: [Number], index: '2dsphere' }
 });
 
 var eventModel = mongoose.model('Event', eventSchema);

@@ -8,7 +8,7 @@ exports.index = function (req, res) {
       // todo - error handling can be better
       err ? res.send(500, err) : res.json(events);
     })
-}
+};
 
 exports.create = function (req, res) {
   Channel.findById(req.body.channelID, function (err, channel) {
@@ -22,6 +22,7 @@ exports.create = function (req, res) {
         startDateTime: req.body.startDateTime,
         endDateTime: req.body.endDateTime, 
         details: req.body.details,
+        location: [req.body.longtitude, req.body.latitude],
         _channel: channel._id
       });
 
@@ -30,7 +31,7 @@ exports.create = function (req, res) {
       });
     }
   });
-}
+};
 
 exports.delete = function (req, res) {
   Event.findById(req.params.id, function (err, evnt) {
@@ -42,4 +43,19 @@ exports.delete = function (req, res) {
         });
       }
     });
-}
+};
+
+var MEAN_RADIUS_OF_EARTH_IN_KM = 6371.009;
+
+exports.search = function (req, res) {
+  var query = {};
+  if (req.query.longitude && req.query.latitude) {
+    query.location = { $nearSphere: [req.query.longitude, req.query.latitude] };
+    if (req.query.maxDistance) {
+      query.location.$maxDistance = req.query.maxDistance / MEAN_RADIUS_OF_EARTH_IN_KM;
+    }
+  }
+  Event.find(query, function (err, events) {
+    err ? res.send(500, err) : res.json(events);
+  });
+};

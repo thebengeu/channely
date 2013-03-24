@@ -42,6 +42,7 @@ db.once('open', function callback () {
   app.get('/channels/:id/events', events.index);
   app.post('/events', events.create); 
   app.delete('/events/:id', events.delete);
+  app.get('/events/search', events.search);
 
   // Text Post routes
   app.get('/channels/:id/posts', posts.index);
