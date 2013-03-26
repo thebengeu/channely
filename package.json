@@ -9,6 +9,8 @@
     "ddp": "~0.3.0",
     "passport": "~0.1.0",
     "express": "~3.1.0",
-    "mongoose": "~3.6.0rc1"
+    "mongoose": "~3.6.0rc1",
+    "bcrypt": "~0.7.0",
+    "passport-oauth2-client-password": "~0.1.0"
   }
 }
