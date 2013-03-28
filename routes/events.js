@@ -1,4 +1,4 @@
-var Event = require('../models/event').Event
+var Event = require('../models/event').Event;
 var Channel = require('../models/channel').Channel;
 
 // Endpoint: /channels/:id/events
