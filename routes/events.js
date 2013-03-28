@@ -45,14 +45,14 @@ exports.delete = function (req, res) {
     });
 };
 
-var MEAN_RADIUS_OF_EARTH_IN_KM = 6371.009;
+var MEAN_RADIUS_OF_EARTH_IN_M = 6371009.0;
 
 exports.search = function (req, res) {
   var query = {};
   if (req.query.longitude && req.query.latitude) {
     query.location = { $nearSphere: [req.query.longitude, req.query.latitude] };
     if (req.query.maxDistance) {
-      query.location.$maxDistance = req.query.maxDistance / MEAN_RADIUS_OF_EARTH_IN_KM;
+      query.location.$maxDistance = req.query.maxDistance / MEAN_RADIUS_OF_EARTH_IN_M;
     }
   }
   Event.find(query, function (err, events) {
