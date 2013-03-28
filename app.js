@@ -32,6 +32,11 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
 
+  // User routes
+  app.get('/users/:id', users.show);
+  app.post('/users', users.create);
+  app.put('/users/:id', users.update);
+
   // Channel routes
   app.get('/channels', channels.index);
   app.get('/channels/:id', channels.show);

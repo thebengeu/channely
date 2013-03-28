@@ -1,5 +1,13 @@
 var User = require('../models/user').User;
 
+exports.show = function (req, res) {
+  User.findById(req.params.id).
+    select({password: 0, clientSecret: 0})
+    .exec(function (err, user) {
+    !user ? res.send(404, "No such user exists!") : res.json(user);
+  });
+}
+
 exports.create = function (req, res) {
   var tmpSecret = makeSecret(13);
   var tmpUser = new User({
@@ -8,20 +16,30 @@ exports.create = function (req, res) {
     clientSecret: tmpSecret
   });
   tmpUser.save(function (err) {
-    err ? res.send(422, err) : res.send(201);
+    if (err) res.send(422, err) 
+    else {
+      var usr = tmpUser.toObject();
+      delete usr.password;
+      delete usr.clientSecret;
+      res.send(201, usr);
+    }  
   });
 }
 
 // be careful - username updates and password
+// will need to do auth plus checking before user changes his own password
 exports.update = function (req, res) {
-  User.findById(req.body.clientId, function (err, user) {
+  User.findById(req.params.id, function (err, user) {
     if (!err && !user) res.send(404, "No such user exists!");
     else if (err) res.send(500, err);
     else {
-      user.username = req.body.username;
-      user.password = req.body.password;
+      if (req.body.username) user.username = req.body.username;
+      if (req.body.password) user.password = req.body.password;
       user.save(function (err) {
-        err ? res.send(422, err) : res.send(201);
+        var usr = user.toObject();
+        delete usr.password;
+        delete usr.clientSecret;
+        err ? res.send(422, err) : res.send(201, usr);
       });
     }
   })
