@@ -7,7 +7,8 @@ var express = require('express'),
 // Routing imports
 var channels = require('./routes/channels'),
     events = require('./routes/events'),
-    posts = require('./routes/posts');
+    posts = require('./routes/posts')
+    users = require('./routes/users');
 
 var app = express();
 
