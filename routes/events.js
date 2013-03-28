@@ -22,7 +22,7 @@ exports.create = function (req, res) {
         startDateTime: req.body.startDateTime,
         endDateTime: req.body.endDateTime, 
         details: req.body.details,
-        location: [req.body.longtitude, req.body.latitude],
+        location: [req.body.longitude, req.body.latitude],
         _channel: channel._id
       });
 
