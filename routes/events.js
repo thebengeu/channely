@@ -55,14 +55,17 @@ exports.search = function (req, res) {
       query.location.$maxDistance = req.query.maxDistance / MEAN_RADIUS_OF_EARTH_IN_M;
     }
   }
-  Event.find(query, function (err, events) {
-    events = events.map(function (event) {
-      event = event.toObject();
-      event.longitude = event.location[0];
-      event.latitude = event.location[1];
-      delete event['location'];
-      return event;
+  Event
+    .find(query)
+    .populate('_channel')
+    .lean()
+    .exec(function (err, events) {
+      events = events.map(function (event) {
+        event.longitude = event.location[0];
+        event.latitude = event.location[1];
+        delete event['location'];
+        return event;
+      });
+      err ? res.send(500, err) : res.json(events);
     });
-    err ? res.send(500, err) : res.json(events);
-  });
 };
