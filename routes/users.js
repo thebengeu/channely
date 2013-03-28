@@ -9,7 +9,7 @@ exports.show = function (req, res) {
 }
 
 exports.create = function (req, res) {
-  var tmpSecret = makeSecret(13);
+  var tmpSecret = makeSecret(30);
   var tmpUser = new User({
     username: req.body.username,
     password: req.body.password,
