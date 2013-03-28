@@ -1,4 +1,5 @@
-var User = require('../models/user').User;
+var User = require('../models/user').User,
+    utils = require('../utils.js');
 
 exports.show = function (req, res) {
   User.findById(req.params.id).
@@ -9,7 +10,7 @@ exports.show = function (req, res) {
 }
 
 exports.create = function (req, res) {
-  var tmpSecret = makeSecret(30);
+  var tmpSecret = utils.randomStr(30);
   var tmpUser = new User({
     username: req.body.username,
     password: req.body.password,
@@ -45,11 +46,4 @@ exports.update = function (req, res) {
   })
 };
 
-function makeSecret(length) {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i=0; i<length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
+
