@@ -56,6 +56,13 @@ exports.search = function (req, res) {
     }
   }
   Event.find(query, function (err, events) {
+    events = events.map(function (event) {
+      event = event.toObject();
+      event.longitude = event.location[0];
+      event.latitude = event.location[1];
+      delete event['location'];
+      return event;
+    });
     err ? res.send(500, err) : res.json(events);
   });
 };
