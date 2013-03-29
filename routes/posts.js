@@ -19,13 +19,13 @@ exports.index = function (req, res) {
         ImagePost
           .find({ _channel: req.params.id })
           .lean()
-          .exec(function(err, textPosts) {
+          .exec(function(err, imagePosts) {
             if (err) {
               res.send(500, err);
             }
-            textPosts.forEach(function (textPost) {
-              textPost.type = 'text';
-              posts.push(textPost);
+            imagePosts.forEach(function (imagePost) {
+              imagePost.type = 'image';
+              posts.push(imagePost);
             });
 
             posts.sort(function compare (a, b) {
