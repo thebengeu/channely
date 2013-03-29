@@ -48,7 +48,7 @@ Template.channel.events({
     TextPosts.insert({
       _channel: Session.get('currentChannelId'),
       content: input.value,
-      time: Date.now()
+      time: new Date()
     });
     input.value = '';
     event.preventDefault();
