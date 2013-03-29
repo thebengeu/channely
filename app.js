@@ -10,7 +10,8 @@ var channels = require('./routes/channels'),
     posts = require('./routes/posts')
     imageposts = require('./routes/imageposts'),
     textposts = require('./routes/textposts'),
-    users = require('./routes/users');
+    users = require('./routes/users'),
+    clients = require('./routes/clients');
 
 var app = express();
 
@@ -38,6 +39,12 @@ db.once('open', function callback () {
   app.get('/users/:id', users.show);
   app.post('/users', users.create);
   app.put('/users/:id', users.update);
+
+  // Client routes - WARNING: not protected;
+  // Only supposed to be used by admins (us)
+  app.get('/clients', clients.index);
+  app.post('/clients', clients.create);
+  app.delete('/clients/:id', clients.delete);
 
   // Channel routes
   app.get('/channels', channels.index);
