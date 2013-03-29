@@ -38,9 +38,11 @@ exports.update = function (req, res) {
 
 exports.delete = function (req, res) {
     Channel.findById(req.params.id, function (err, channel) {
-      if (!channel) {
-        res.send(404);
-      } else {
+      if (!channel)
+        res.send(404, "No such channel exists");
+      else if (err)
+        res.send(500, err);
+      else {
         channel.remove(function () {
           res.send(204);
         });
