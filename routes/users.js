@@ -3,7 +3,7 @@ var User = require('../models/user').User,
 
 exports.show = function (req, res) {
   User.findById(req.params.id).
-    select({password: 0, clientSecret: 0})
+    select({password: 0})
     .exec(function (err, user) {
     !user ? res.send(404, "No such user exists!") : res.json(user);
   });
@@ -13,15 +13,13 @@ exports.create = function (req, res) {
   var tmpSecret = utils.randomStr(30);
   var tmpUser = new User({
     username: req.body.username,
-    password: req.body.password,
-    clientSecret: tmpSecret
+    password: req.body.password
   });
   tmpUser.save(function (err) {
     if (err) res.send(422, err) 
     else {
       var usr = tmpUser.toObject();
       delete usr.password;
-      delete usr.clientSecret;
       res.send(201, usr);
     }  
   });
@@ -39,7 +37,6 @@ exports.update = function (req, res) {
       user.save(function (err) {
         var usr = user.toObject();
         delete usr.password;
-        delete usr.clientSecret;
         err ? res.send(422, err) : res.send(201, usr);
       });
     }
