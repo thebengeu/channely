@@ -8,6 +8,8 @@ var express = require('express'),
 var channels = require('./routes/channels'),
     events = require('./routes/events'),
     posts = require('./routes/posts')
+    imageposts = require('./routes/imageposts'),
+    textposts = require('./routes/textposts'),
     users = require('./routes/users');
 
 var app = express();
@@ -50,10 +52,18 @@ db.once('open', function callback () {
   app.delete('/events/:id', events.delete);
   app.get('/events/search', events.search);
 
-  // Text Post routes
+  // Unified Post routes
   app.get('/channels/:id/posts', posts.index);
-  app.post('/posts', posts.create); // temporary endpoint, please change url to reflect text, image
-  app.delete('/posts/:id', posts.delete);
+
+  // Text Post routes
+  app.get('/channels/:id/posts/text', textposts.index);
+  app.post('/posts/text', textposts.create);
+  app.delete('/posts/text/:id', textposts.delete);
+
+  // Image Post routes
+  app.get('/channels/:id/posts/image', imageposts.index);
+  app.post('/posts/image', imageposts.create);
+  app.delete('/posts/image/:id', imageposts.delete);
 });
 
 http.createServer(app).listen(app.get('port'), function () {
