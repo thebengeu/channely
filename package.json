@@ -12,6 +12,8 @@
     "mongoose": "~3.6.0rc1",
     "bcrypt": "~0.7.0",
     "passport-oauth2-client-password": "~0.1.0",
-    "passport-http": "~0.2.1"
+    "passport-http": "~0.2.1",
+    "oauth2orize": "~0.1.0",
+    "passport-http-bearer": "~0.2.1"
   }
 }

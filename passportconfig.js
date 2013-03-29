@@ -2,9 +2,21 @@
 var passport = require('passport'),
     ClientPasswordStrategy = require('passport-oauth2-client-password').Strategy,
     BasicStrategy = require('passport-http').BasicStrategy,
+    BearerStrategy = require('passport-http-bearer').Strategy,
     User = require('./models/user').User,
     Client = require('./models/client').Client;
 
+
+passport.use(new BearerStrategy(
+      function(accessToken, done) {
+        User.findOne({ accessToken : accessToken }, function (err, user) {
+          if (err) return done(err);
+          if (!user) return done(null, false);
+          // currently only universal scope is implemented
+          var info = { scope: '*' }
+          done(null, user, info);
+        });
+      }));
 
 // The ClientPassword strategy is used here for the bearer token strategy
 passport.use(new ClientPasswordStrategy(
@@ -22,7 +34,7 @@ passport.use(new ClientPasswordStrategy(
 // http-basic
 passport.use(new BasicStrategy(
       function(uname, password, done) {
-        User.find({ username: uname }, function (err, user) {
+        User.findOne({ username: uname }, function (err, user) {
           if (err)  return done(err); 
           if (!user)  return done(null, false); 
           else {

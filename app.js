@@ -11,7 +11,8 @@ var channels = require('./routes/channels'),
     imageposts = require('./routes/imageposts'),
     textposts = require('./routes/textposts'),
     users = require('./routes/users'),
-    clients = require('./routes/clients');
+    clients = require('./routes/clients'),
+    oauth2 = require('./oauth2');
 
 var app = express();
 
@@ -38,6 +39,8 @@ mongoose.connect(process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/meteor');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
+  // Auth routes
+  app.post('/oauth/token', oauth2.token);
 
   // User routes
   app.get('/users/:id', users.show);
