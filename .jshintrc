@@ -22,7 +22,7 @@
     "curly"         : true,     // require {} for all blocks/scopes
     "latedef"       : true,     // prohibit variable use before definition ("hoisting")
     "noempty"       : true,     // prohibit empty blocks
-    "trailing"      : true,     // no trailing whitespace is allowed
+    "trailing"      : false,     // no trailing whitespace is allowed
     "undef"         : true,     // prevent the use of undeclared variables
 
     // Relaxing
