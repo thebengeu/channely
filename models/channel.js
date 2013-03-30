@@ -4,6 +4,7 @@ var mongoose = require('mongoose')
 var channelSchema = new mongoose.Schema({
   name: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
+  owner: { type: String, ref: 'User' }
   // owner
 });
 

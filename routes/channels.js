@@ -1,4 +1,5 @@
 var Channel = require('../models/channel').Channel,
+    User = require('../models/user').User,
     passport = require('passport');
 
 // Channel routes
@@ -17,10 +18,14 @@ exports.show = function (req, res) {
 
 // Channel create, params:
 // name:
-exports.create = [ 
+exports.create = [
   passport.authenticate('bearer', {session: false}),
   function (req, res) {
-    var channel = new Channel(req.body);
+    var channel = new Channel({
+      name: req.body.name,
+      createdAt: req.body.createdAt,
+      owner: req.user._id
+    });
     channel.save(function (err) {
       err ? res.send(422, err) : res.send(201, channel);
     });
