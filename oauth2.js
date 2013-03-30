@@ -16,12 +16,14 @@ var oauth2orize = require('oauth2orize'),
 // NOTE: in actual fact, client secret is supposed to be used to calculate
 // a nonce, but considering our API is not graded, CBA.
 exports.token = [
-  passport.authenticate(['basic', 'oauth2-client-password'], { session: false }),
+  passport.authenticate(['basic'], { session: false }),
   function(req, res) {
     Client.findById(req.body.clientId, function (err, client) {
+      if (!client) { res.send(401, "No such client"); }
       if (!client.clientSecret == req.body.clientSecret) res.send(401);
     });
     User.findOne({ username: req.body.username }, function (err, user) {
+      if (!user) { res.send(401, "No such user"); }
       user.comparePassword(req.body.password, function(err, isMatch) {
         if (err) res.send(500, err);
         if (isMatch) {
