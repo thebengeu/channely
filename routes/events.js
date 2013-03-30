@@ -15,15 +15,20 @@ exports.create = [
   passport.authenticate('bearer', {session: false}),
   function (req, res) {
     Channel.findById(req.body.channelID, function (err, channel) {
-      if (!err && !channel) res.send(404, "No such channel exists!");
-      else if (err) {
-        res.send(500, err);
-      } else {
+      if (err) { res.send(500, err); }
+      else if (!channel) { res.send(404, "No such channel exists!"); }
+      else if (channel.owner != req.user._id) { res.send(403); }
+      else {
         // todo: date validations (end > start)
+        var startDate = req.body.startDateTime;
+        var endDate = req.body.endDateTime;
+        if (Date.parse(startDate) > Date.parse(endDate)) {
+          res.send(422, "Start time cannot be later than end time");
+        }
         var tmpEvent = new Event({
-          name: req.body.name, 
-            startDateTime: req.body.startDateTime,
-            endDateTime: req.body.endDateTime, 
+          name: req.body.name,
+            startDateTime: startDate,
+            endDateTime: endDate,
             details: req.body.details,
             location: [req.body.longitude, req.body.latitude],
             _channel: channel._id
@@ -38,19 +43,26 @@ exports.create = [
 ]
 
 exports.delete = [
-  passport.authenticate('bearer', {session: false}),
+passport.authenticate('bearer', {session: false}),
   function (req, res) {
     Event.findById(req.params.id, function (err, evnt) {
-      if (!evnt) {
-        res.send(404);
-      } else {
-        evnt.remove(function () {
-          res.send(204);
+      if (err) { res.send(500, err); }
+      else if (!evnt) { res.send(404); }
+      else {
+        Channel.findById(evnt._channel, function (err, channel) {
+          if (err) { res.send(500, err); }
+          else if (!channel) { res.send(422); }
+          else if (channel.owner != req.user._id) { res.send(403); }
+          else {
+            evnt.remove(function() {
+              res.send(204);
+            });
+          }
         });
       }
     });
   }
-]
+];
 
 var MEAN_RADIUS_OF_EARTH_IN_M = 6371009.0;
 
