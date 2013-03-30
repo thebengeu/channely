@@ -53,6 +53,7 @@ exports.delete = [
   function (req, res) {
     TextPost.findById(req.params.id, function (err, textPost) {
       if (!textPost) res.send(404);
+      else if (textPost.owner != req.user._id) { res.send(403); }
       else {
         textPost.remove(function () {
           res.send(204);
