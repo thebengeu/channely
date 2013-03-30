@@ -38,6 +38,8 @@ passport.authenticate('bearer', {session: false}),
     Channel.findById(req.params.id, function (err, channel) {
       if (!channel) {
         res.send(404);
+      } else if (channel.owner != req.user._id) {
+        res.send(403); // authorizaton not granted
       } else {
         channel.name = req.body.name;
         channel.save(function (err) {
@@ -54,7 +56,9 @@ passport.authenticate('bearer', {session: false}),
     Channel.findById(req.params.id, function (err, channel) {
       if (!channel) res.send(404, "No such channel exists");
       else if (err) res.send(500, err);
-      else {
+      else if (channel.owner != req.user._id) {
+        res.send(403);
+      } else {
         channel.remove(function () {
           res.send(204);
         });
