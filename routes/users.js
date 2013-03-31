@@ -31,6 +31,7 @@ exports.create = function (req, res) {
 exports.update = [
   passport.authenticate('bearer', {session: false}),
   function (req, res) {
+    if (req.user != req.params.id) { res.send(403); }
     User.findById(req.params.id, function (err, user) {
       if (!err && !user) res.send(404, "No such user exists!");
       else if (err) res.send(500, err);
