@@ -60,4 +60,4 @@ exports.delete = [
       }
     });
   }
-]
+];

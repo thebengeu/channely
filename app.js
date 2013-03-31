@@ -20,7 +20,7 @@ app.configure(function () {
   app.set('port', process.env.PORT || 3003);
   app.use(express.favicon());
   app.use(express.logger('dev'));
-  app.use(express.bodyParser());
+  app.use(express.bodyParser({ keepExtensions: true }));
   app.use(express.methodOverride());
   app.use(passport.initialize());
   app.use(passport.session());
@@ -71,12 +71,12 @@ db.once('open', function callback () {
 
   // Text Post routes
   app.get('/channels/:id/posts/text', textposts.index);
-  app.post('/posts/text', textposts.create);
+  app.post('/channels/:id/posts/text', textposts.create);
   app.delete('/posts/text/:id', textposts.delete);
 
   // Image Post routes
   app.get('/channels/:id/posts/image', imageposts.index);
-  app.post('/posts/image', imageposts.create);
+  app.post('/channels/:id/posts/image', imageposts.create);
   app.delete('/posts/image/:id', imageposts.delete);
 });
 
