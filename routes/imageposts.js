@@ -3,7 +3,7 @@ var ImagePost = require('../models/imagepost').ImagePost,
     User = require('../models/user').User,
     passport = require('passport');
 
-var fs = require('fs');
+var mv = require('mv');
 var path = require('path');
 
 var PUBLIC_IMAGES_FILE_PATH = '/ebs/public/images/';
@@ -24,7 +24,7 @@ exports.create = function (req, res) {
       var oldPath = req.files.image.path;
       var baseName = path.basename(oldPath);
       var newPath = path.join(PUBLIC_IMAGES_FILE_PATH, baseName);
-      fs.rename(oldPath, newPath, function (err) {
+      mv(oldPath, newPath, function (err) {
         if (err) {
           res.send(422, err);
         }
@@ -34,7 +34,7 @@ exports.create = function (req, res) {
           _channel: channel._id
         };
         // if there's an access token, get the user and attach it to this post
-        // otherwise just save a username     
+        // otherwise just save a username
         if (req.query.access_token) {
           User.findOne({accessToken: req.query.access_token },
             function(err, user){
@@ -47,7 +47,7 @@ exports.create = function (req, res) {
               var imagePost = new ImagePost(imageProperties);
               imagePost.save(function (err) {
                 err ? res.send(422, err) : res.send(201, imagePost);
-              });  
+              });
             });
         } else {
           imageProperties.username = req.body.username;
