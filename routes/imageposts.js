@@ -1,4 +1,4 @@
-var fs = require('fs');
+var mv = require('mv');
 var path = require('path');
 
 var ImagePost = require('../models/imagepost').ImagePost;
@@ -22,7 +22,7 @@ exports.create = function (req, res) {
       var oldPath = req.files.image.path;
       var baseName = path.basename(oldPath);
       var newPath = path.join(PUBLIC_IMAGES_FILE_PATH, baseName);
-      fs.rename(oldPath, newPath, function (err) {
+      mv(oldPath, newPath, function (err) {
         if (err) {
           res.send(422, err);
         }
