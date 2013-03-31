@@ -16,7 +16,7 @@ and with basic HTML auth:
 - Username 
 - Password
 
-(Both the client ID and client secret are to be hardcoded into the app.)
+(Both the client ID and client secret are to be hardcoded into the app. They indicate the client, after all)
 
 ```
 POST /oauth/token
@@ -35,12 +35,23 @@ userId: 51557cb1af60b225e5000001
 
 Take and store the access_token - this would be required for access to all protected API endpoints. 
 
-Hitting this API endpoint generates and stores a new access_token.
+Hitting this API endpoint generates and stores a new access_token everytime.
 
 __Failures__:
 
 - If the clientSecret is wrong, the app will return a __403__ error.
 - If the username or password in HTTP Basic Auth fails, the app will return a __401__ error. 
+
+# Client
+__This is NOT an official endpoint.__ Essentially the following endpoints are created to allow us to quickly perform CRUD on clients without mucking around the DB:
+
+    POST /clients //- creates a new client
+    GET /clients //- list all clientIDs and their clientSecrets
+    DELETE /clients/:id //- deletes client with :id
+
+These endpoints __should be deleted or disabled__ when in production.
+
+_Note: clients are basically API consumer devices. So our iPad app should have a clientID + clientSecret, and a theoretical Android app would have a different pair._
 
 # User
 The user endpoints are for __getting__, __creating__ and __updating__ a user.
