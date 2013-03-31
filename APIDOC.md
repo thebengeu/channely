@@ -301,7 +301,133 @@ __Failures:__
 - If a user tries to delete a channel he doesn't own, the API returns a __403__ error.
 
 ## Search Events
-FOR BENG TO FILL UP
+TODO: FOR BENG TO FILL UP
 
 # Posts
+There are 3 kinds of posts: text, image and video. Each of these post types exist under their own domain.
 
+## Get all posts for a channel
+
+This endpoint returns all posts (regardless of type) for a particular channel.
+
+    GET /channel/:id/posts
+
+__Results__:
+
+```
+[
+  {
+    "owner" : "515409c602df6886b8000001",
+    "content" : "Hello there! Is all well?",
+    "_id" : "5157ef13773cc2ca0f000002",
+    "__v" : 0,
+    "time" : "2013-03-31T08:08:51.738Z",
+    "_channel" : "5156a1168dd1f00000000002"
+  },
+  {
+    "_id" : "5157ef4f773cc2ca0f000003",
+    "content" : "I hate this sepaker!",
+    "time" : "2013-03-31T08:09:51.778Z",
+    "__v" : 0,
+    "_channel" : "5156a1168dd1f00000000002",
+    "username" : "anon"
+  }
+]
+```
+
+## Get all text posts for a channel
+This endpoint returns only the text posts for a particular channel.
+
+    GET /channel/:id/posts/text
+    
+__Results:__
+
+```
+[
+  {
+    "owner" : "515409c602df6886b8000001",
+    "content" : "Hello there! Is all well?",
+    "_id" : "5157ef13773cc2ca0f000002",
+    "__v" : 0,
+    "time" : "2013-03-31T08:08:51.738Z",
+    "_channel" : "5156a1168dd1f00000000002"
+  },
+  {
+    "_id" : "5157ef4f773cc2ca0f000003",
+    "content" : "I hate this sepaker!",
+    "time" : "2013-03-31T08:09:51.778Z",
+    "__v" : 0,
+    "_channel" : "5156a1168dd1f00000000002",
+    "username" : "anon"
+  }
+]
+```
+
+## Create text post
+This endpoint is 'somewhat' protected. 
+
+If a user would like to associate his post with his user account, pass an `access_token` while making the request. Otherwise, the user __must__ provide a `username` in the request's body.
+
+If both `username` and `access_token` are provided, the access token is given precedence and the post is associated with the user's account.
+
+Therefore, you can make the following request both with and without the access token:
+
+    POST /channels/:id/posts/text
+    
+and
+    
+    POST /channels/:id/posts/text?access_token=xxxx
+
+With body parameters:
+
+- content: "A full text post commenting on the event or wtv!"
+- username: "An anon username" (optional)
+
+__Results:__
+
+If an access_token is given:
+
+```
+HTTP STATUS 201
+{
+  "owner" : "515409c602df6886b8000001",
+  "content" : "Hello there! Is everyone here happy?",
+  "_id" : "5157ef13773cc2ca0f000002",
+  "__v" : 0,
+  "time" : "2013-03-31T08:08:51.738Z",
+  "_channel" : "5156a1168dd1f00000000002"
+}
+```
+
+If only a username is given:
+
+```
+HTTP STATUS 201
+{
+  "_id" : "5157ef4f773cc2ca0f000003",
+  "content" : "Hello there! Is everyone here happy?",
+  "time" : "2013-03-31T08:09:51.778Z",
+  "__v" : 0,
+  "_channel" : "5156a1168dd1f00000000002",
+  "username" : "anon"
+}
+```
+
+__Failures:__
+
+- if neither a username or an access_token is provided, API returns __400__ Bad Request error.
+
+## Delete Text Posts
+This endpoint is protected. 
+
+A user is only able to delete a text post IF the post is associated with his user account. This means nobody can delete an anon post.
+
+    DELETE /posts/text/:id
+
+__Results:__
+
+    HTTP STATUS 204
+    
+__Failures:__
+
+- If a user attempts to delete a post that is not associated with his account, or is not associated with any user account (is anonymous) the API will return a __403__ error.
