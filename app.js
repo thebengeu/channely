@@ -20,7 +20,7 @@ app.configure(function () {
   app.set('port', process.env.PORT || 3003);
   app.use(express.favicon());
   app.use(express.logger('dev'));
-  app.use(express.bodyParser());
+  app.use(express.bodyParser({ keepExtensions: true }));
   app.use(express.methodOverride());
   app.use(passport.initialize());
   app.use(passport.session());
