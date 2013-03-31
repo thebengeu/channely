@@ -5,7 +5,7 @@ var ImagePost = require('../models/imagepost').ImagePost;
 var Channel = require('../models/channel').Channel;
 
 var PUBLIC_IMAGES_FILE_PATH = '/ebs/public/images/';
-var PUBLIC_IMAGES_URL = 'http://upthetreehouse/images/';
+var PUBLIC_IMAGES_URL = 'http://upthetreehouse.com/images/';
 
 exports.index = function (req, res) {
   ImagePost.find({ _channel: req.params.id }, null, {sort: {time: 1}},
