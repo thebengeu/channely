@@ -3,7 +3,7 @@
 
 This should be updated every time you change an endpoint.
 
-## Auth
+# Auth
 We're using a variant of X-Auth. Essentially, client sends over HTTPS:
 
 Body parameters:
@@ -42,10 +42,10 @@ __Failures__:
 - If the clientSecret is wrong, the app will return a __403__ error.
 - If the username or password in HTTP Basic Auth fails, the app will return a __401__ error. 
 
-## User
+# User
 The user endpoints are for __getting__, __creating__ and __updating__ a user.
 
-### Create User
+## Create User
 
     POST /users
 
@@ -65,7 +65,7 @@ HTTP STATUS 201
 }
 ```
 
-### Show User
+## Show User
 
     GET /users/:id
 
@@ -80,10 +80,10 @@ HTTP STATUS 200
 }
 ```
 
-### Update User
+## Update User
 Updating a user requires an access token. Users are only allowed to edit their own accounts.
 
-    POST /users/:id?access_token=xxxx
+    PUT /users/:id?access_token=xxxx
     
 with the optional params: 
 
@@ -107,10 +107,10 @@ __Failures__:
 
 - If user attempts to edit the account of another user, the app returns a __403__ error.
 
-## Channel
-The channel endpoints are for __creating__, __editing__, __getting__ and __deleting__ channels. The creation and update endpoints are protected.
+# Channel
+The channel endpoints are for __creating__, __editing__, __getting__ and __deleting__ channels. The create, delete and update endpoints are protected.
 
-### List All Channels
+## List All Channels
 
     GET /channels
     
@@ -143,7 +143,7 @@ HTTP STATUS 200
 ]
 ```
 
-### Create Channel
+## Create Channel
 The create channel endpoint is protected, and requires an access_token. 
 
     POST /channels?access_token=xxxx
@@ -167,3 +167,141 @@ HTTP STATUS 201
 __Failure:__
 
 If the provided channel name is not available, the API returns:
+
+TODO: FIX THIS AND FILL IT IN LATER
+
+## Update Channel
+The update channel endpoint is protected, and requires an access_token. 
+
+    PUT /channels/:id?access_token=xxxx
+   
+__Results__:
+
+```
+HTTP STATUS 200
+{
+  "_id" : "5157dfafdddf9f550d000001",
+  "owner" : "515409c602df6886b8000001",
+  "__v" : 0,
+  "createdAt" : "2013-03-31T07:05:14.855Z",
+  "name" : "Blah"
+}
+```
+
+__Failure__:
+
+- If a user attempts to edit a channel that he/she doesn't own, the API will return a __403__ unauthorized error.
+
+## Delete Channel
+The delete channel endpoint is protected, and requires an access_token.
+
+    DELETE /channels/:id?access_token=xxx
+
+__Results__:
+
+    HTTP STATUS 204
+    
+# Events
+The events endpoints are for __creating__, __getting__, __deleting__ and __searching__ for events. The create and delete endpoints are protected.
+
+## List Events for a Particular Channel
+
+    GET /channels/:id/events
+
+__Results:__
+
+```
+HTTP STATUS 200
+[
+  {
+    "_id" : "5157e36d9a08979a0d000001",
+    "location" : [
+      16.80569,
+      51.05693
+    ],
+    "__v" : 0,
+    "startDateTime" : "2013-03-15T06:54:47.636Z",
+    "_channel" : "5157dfafdddf9f550d000001",
+    "endDateTime" : "2013-03-15T06:54:47.636Z",
+    "name" : "Friday Hacks #13"
+  },
+  {
+    "_id" : "5157e46e9a08979a0d000002",
+    "location" : [
+      16.80569,
+      51.05693
+    ],
+    "__v" : 0,
+    "startDateTime" : "2013-03-16T04:54:47.636Z",
+    "_channel" : "5157dfafdddf9f550d000001",
+    "endDateTime" : "2013-03-16T06:54:47.636Z",
+    "name" : "Friday Hacks #14"
+  },
+  {
+    "_id" : "5157e4f19a08979a0d000003",
+    "location" : [
+      16.80569,
+      51.05693
+    ],
+    "__v" : 0,
+    "startDateTime" : "2013-03-17T06:54:47.636Z",
+    "_channel" : "5157dfafdddf9f550d000001",
+    "endDateTime" : "2013-03-17T04:54:47.636Z",
+    "name" : "Friday Hacks #15"
+  }
+]
+```
+
+## Create Event
+The create event endpoint is protected and requires an access_token.
+
+    POST /events?access_token=xxxx
+
+with body params (example below):
+
+- name: 'Friday Hacks #17'
+- channelId: 5157dfafdddf9f550d000001
+- longitude: 16.80569
+- latitude: 51.05693
+- startDateTime: 2013-03-15T04:54:47.636Z
+- endDateTime: 2013-03-15T06:54:47.636Z
+
+__Results:__
+
+```
+HTTP STATUS 201
+{
+  "_id" : "5157e36d9a08979a0d000001",
+  "location" : [
+    16.80569,
+    51.05693
+  ],
+  "__v" : 0,
+  "startDateTime" : "2013-03-15T04:54:47.636Z",
+  "_channel" : "5157dfafdddf9f550d000001",
+  "endDateTime" : "2013-03-15T06:54:47.636Z",
+  "name" : "Friday Hacks #13"
+}
+```
+
+__Failures:__
+
+- The API will return a __422__ error code if `endDateTime` is before `startDateTime`.
+
+## Delete Event
+
+    DELETE /events/:id?access_token=xxx
+
+__Results:__
+
+    HTTP STATUS 204
+    
+__Failures:__
+
+- If a user tries to delete a channel he doesn't own, the API returns a __403__ error.
+
+## Search Events
+FOR BENG TO FILL UP
+
+# Posts
+
