@@ -12,6 +12,7 @@ var channels = require('./routes/channels'),
     textposts = require('./routes/textposts'),
     users = require('./routes/users'),
     clients = require('./routes/clients'),
+    hls = require('./routes/hls'),
     oauth2 = require('./oauth2');
 
 var app = express();
@@ -78,6 +79,11 @@ db.once('open', function callback () {
   app.get('/channels/:id/posts/image', imageposts.index);
   app.post('/channels/:id/posts/image', imageposts.create);
   app.delete('/posts/image/:id', imageposts.delete);
+
+  // HLS routes
+  app.post('/hls/recordings', hls.createRecording);
+  app.post('/hls/recordings/:id/stop', hls.stopRecording);
+  app.post('/hls/recordings/:id/chunks', hls.createChunk);
 });
 
 http.createServer(app).listen(app.get('port'), function () {
