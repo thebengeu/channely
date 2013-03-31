@@ -71,12 +71,12 @@ db.once('open', function callback () {
 
   // Text Post routes
   app.get('/channels/:id/posts/text', textposts.index);
-  app.post('/posts/text', textposts.create);
+  app.post('/channels/:id/posts/text', textposts.create);
   app.delete('/posts/text/:id', textposts.delete);
 
   // Image Post routes
   app.get('/channels/:id/posts/image', imageposts.index);
-  app.post('/posts/image', imageposts.create);
+  app.post('/channels/:id/posts/image', imageposts.create);
   app.delete('/posts/image/:id', imageposts.delete);
 });
 
