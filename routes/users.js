@@ -26,8 +26,6 @@ exports.create = function (req, res) {
   });
 }
 
-// be careful - username updates and password
-// will need to do auth plus checking before user changes his own password
 exports.update = [
   passport.authenticate('bearer', {session: false}),
   function (req, res) {

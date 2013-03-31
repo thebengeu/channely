@@ -1,7 +1,6 @@
 // Module dependencies
 
-var oauth2orize = require('oauth2orize'), 
-    passport = require('passport'),
+var passport = require('passport'),
     utils = require('./utils'),
     Client = require('./models/client').Client,
     User = require('./models/user').User;
@@ -10,7 +9,8 @@ var oauth2orize = require('oauth2orize'),
 // Consider this X-Auth
 // App is to send (via HTTPS) the following credentials:
 // - Username
-// - Passport
+// - Password
+// (Username and Password happens via HTTP basic auth)
 // - Client ID (hardcoded into the app)
 // - Client Secret (hardcoded into the app)
 // NOTE: in actual fact, client secret is supposed to be used to calculate
