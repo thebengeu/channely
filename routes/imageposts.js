@@ -42,6 +42,7 @@ exports.create = function (req, res) {
                 imageProperties.username = req.body.username;
               } else if (user) {
                 imageProperties.owner = user._id;
+                imageProperties.username = user.username;
               }
 
               var imagePost = new ImagePost(imageProperties);

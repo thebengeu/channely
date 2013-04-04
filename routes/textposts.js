@@ -26,6 +26,7 @@ exports.create = function (req, res) {
           if (err || !user) { userProperties.username = req.body.username; }
           else if (user) {
             userProperties.owner = user._id;
+            userProperties.username = user.username;
           }
 
         var textPost = new TextPost(userProperties);
