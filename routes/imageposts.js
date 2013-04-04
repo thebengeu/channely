@@ -33,10 +33,33 @@ exports.create = function (req, res) {
           url: PUBLIC_IMAGES_URL + baseName,
           _channel: channel._id
         };
+
+        var token = undefined;
+
+        if (req.headers && req.headers['authorization']) {
+          var parts = req.headers['authorization'].split(' ');
+          if (parts.length == 2) {
+            var scheme = parts[0]
+              , credentials = parts[1];
+
+            if (/Bearer/i.test(scheme)) {
+              token = credentials;
+            }
+          }
+        }
+
+        if (req.body && req.body['access_token']) {
+          token = req.body['access_token'];
+        }
+
+        if (req.query && req.query['access_token']) {
+          token = req.query['access_token'];
+        }
+
         // if there's an access token, get the user and attach it to this post
         // otherwise just save a username
-        if (req.query.access_token) {
-          User.findOne({accessToken: req.query.access_token },
+        if (token) {
+          User.findOne({accessToken: token },
             function(err, user){
               if (err || !user) {
                 imageProperties.username = req.body.username;

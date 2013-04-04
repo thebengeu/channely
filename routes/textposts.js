@@ -19,10 +19,32 @@ exports.create = function (req, res) {
         content: req.body.content,
     _channel: channel._id };
 
+      var token = undefined;
+
+      if (req.headers && req.headers['authorization']) {
+        var parts = req.headers['authorization'].split(' ');
+        if (parts.length == 2) {
+          var scheme = parts[0]
+            , credentials = parts[1];
+
+          if (/Bearer/i.test(scheme)) {
+            token = credentials;
+          }
+        }
+      }
+
+      if (req.body && req.body['access_token']) {
+        token = req.body['access_token'];
+      }
+
+      if (req.query && req.query['access_token']) {
+        token = req.query['access_token'];
+      }
+
       // if access token exists, save user
       // else just save the username
-      if (req.query.access_token) {
-        User.findOne({ accessToken: req.query.access_token }, function (err, user) {
+      if (token) {
+        User.findOne({ accessToken: token }, function (err, user) {
           if (err || !user) { userProperties.username = req.body.username; }
           else if (user) {
             userProperties.owner = user._id;
