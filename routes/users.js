@@ -1,5 +1,6 @@
 var User = require('../models/user').User,
-    utils = require('../utils.js');
+    utils = require('../utils.js')
+    passport = require('passport');
 
 exports.show = function (req, res) {
   User.findById(req.params.id).
@@ -25,22 +26,23 @@ exports.create = function (req, res) {
   });
 }
 
-// be careful - username updates and password
-// will need to do auth plus checking before user changes his own password
-exports.update = function (req, res) {
-  User.findById(req.params.id, function (err, user) {
-    if (!err && !user) res.send(404, "No such user exists!");
-    else if (err) res.send(500, err);
-    else {
-      if (req.body.username) user.username = req.body.username;
-      if (req.body.password) user.password = req.body.password;
-      user.save(function (err) {
-        var usr = user.toObject();
-        delete usr.password;
-        err ? res.send(422, err) : res.send(201, usr);
-      });
-    }
-  })
-};
-
+exports.update = [
+  passport.authenticate('bearer', {session: false}),
+  function (req, res) {
+    if (req.user != req.params.id) { res.send(403); }
+    User.findById(req.params.id, function (err, user) {
+      if (!err && !user) res.send(404, "No such user exists!");
+      else if (err) res.send(500, err);
+      else {
+        if (req.body.username) user.username = req.body.username;
+        if (req.body.password) user.password = req.body.password;
+        user.save(function (err) {
+          var usr = user.toObject();
+          delete usr.password;
+          err ? res.send(422, err) : res.send(201, usr);
+        });
+      }
+    })
+  }
+]
 

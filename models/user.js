@@ -1,12 +1,12 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema
+    Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
     SALT_WORK_FACTOR = 10;
 
 var userSchema = new mongoose.Schema({
   username: { type: String, required: true, index: { unique: true} },
     password: { type: String, required: true},
-    accessToken: { type: String, required: true }
+    accessToken: { type: String }
 });
 
 
