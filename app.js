@@ -1,5 +1,6 @@
 var express = require('express'),
-    http = require('http'),
+    fs = require('fs'),
+    https = require('https'),
     mongoose = require('mongoose'),
     path = require('path'),
     passport = require('passport');
@@ -86,6 +87,11 @@ db.once('open', function callback () {
   app.post('/hls/recordings/:id/chunks', hls.createChunk);
 });
 
-http.createServer(app).listen(app.get('port'), function () {
+var options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+https.createServer(options, app).listen(app.get('port'), function () {
   console.log("Express server listening on port " + app.get('port'));
 });
