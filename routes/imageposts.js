@@ -51,7 +51,9 @@ exports.create = function (req, res) {
               });
             });
         } else {
-          imageProperties.username = req.body.username;
+          if (req.body.username)
+            imageProperties.username = req.body.username;
+
           var imagePost = new ImagePost(imageProperties);
           imagePost.save(function (err) {
             err ? res.send(422, err) : res.send(201, imagePost);

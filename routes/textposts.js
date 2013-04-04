@@ -36,8 +36,8 @@ exports.create = function (req, res) {
 
         });
       } else {
-        if (!req.body.username) { res.send(400); }
-        userProperties.username = req.body.username;
+        if (req.body.username)
+          userProperties.username = req.body.username;
 
         var textPost = new TextPost(userProperties);
         textPost.save(function (err) {

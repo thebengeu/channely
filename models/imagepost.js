@@ -7,7 +7,7 @@ var imagePostSchema = new mongoose.Schema({
   content: { type: String, trim: true },
   url: { type: String, required: true, trim: true },
   owner: { type: String, ref: 'User' },
-  username: { type: String }
+  username: { type: String, default: 'Anonymous' }
 });
 
 var imagePostModel = mongoose.model('ImagePost', imagePostSchema);

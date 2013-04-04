@@ -6,7 +6,7 @@ var textPostSchema = new mongoose.Schema({
     time: { type: Date, default: Date.now },
     content: { type: String, required: true, trim: true },
     owner: { type: String, ref: 'User' },
-    username: { type: String }
+    username: { type: String, default: 'Anonymous' }
 });
 
 var textPostModel = mongoose.model('TextPost', textPostSchema);
