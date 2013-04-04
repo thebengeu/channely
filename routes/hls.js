@@ -1,6 +1,7 @@
 var HLSRecording = require('../models/hlsrecording').HLSRecording,
     HLSChunk = require('../models/hlschunk').HLSChunk;
 
+var ffmpeg = require('fluent-ffmpeg');
 var fs = require('fs');
 var mv = require('mv');
 var path = require('path');
@@ -82,23 +83,63 @@ exports.createChunk = function (req, res) {
 
     var oldPath = req.files.chunk.path;
     var baseName = path.basename(oldPath);
-    var newPath = path.join(HLS_FILE_PATH, hlsRecording.id, baseName);
-    mv(oldPath, newPath, function (err) {
-      if (err) return res.send(422, err);
+    var extension = path.extname(baseName);
+    var newPath;
 
-      var hlsChunk = new HLSChunk({
-        duration: req.body.duration,
-        filePath: newPath,
-        seqNo: req.body.seqNo,
-        _recording: hlsRecording.id
+    if (extension === '.ts') {
+      newPath = path.join(HLS_FILE_PATH, hlsRecording.id, baseName);
+
+      mv(oldPath, newPath, function (err) {
+        if (err) return res.send(422, err);
+
+        var url = HLS_URL + hlsRecording.id + '/' + baseName;
+
+        var hlsChunk = new HLSChunk({
+          duration: req.body.duration,
+          filePath: newPath,
+          seqNo: req.body.seqNo,
+          url: url,
+          _recording: hlsRecording.id
+        });
+
+        hlsChunk.save(function (err) {
+          err ? res.send(422, err) : res.send(201, hlsChunk);
+
+          // fire off generation of playlist, don't care about result.
+          generatePlaylist(hlsRecording);
+        });
       });
+    } else if (extension === '.mp4') {
+      var newBaseName = path.basename(oldPath, extension) + '.ts';
+      newPath = path.join(HLS_FILE_PATH, hlsRecording.id, newBaseName);
 
-      hlsChunk.save(function (err) {
-        err ? res.send(422, err) : res.send(201, hlsChunk);
+      var proc = new ffmpeg({ source: oldPath })
+        .withVideoCodec('copy')
+        .withAudioCodec('copy')
+        .addOption('-vbsf', 'h264_mp4toannexb')
+        .addOption('-loglevel', 'error')
+        .saveToFile(newPath, function (stdout, stderr) {
+          if (stderr) return res.send(422, stderr);
 
-        // fire off generation of playlist, don't care about result.
-        generatePlaylist(hlsRecording);
-      });
-    });
+          var url = HLS_URL + hlsRecording.id + '/' + newBaseName;
+
+          var hlsChunk = new HLSChunk({
+            duration: req.body.duration,
+            filePath: newPath,
+            seqNo: req.body.seqNo,
+            url: url,
+            _recording: hlsRecording.id
+          });
+
+          hlsChunk.save(function (err) {
+            err ? res.send(422, err) : res.send(201, hlsChunk);
+
+            // fire off generation of playlist, don't care about result.
+            generatePlaylist(hlsRecording);
+          });
+        });
+    } else {
+      res.send(500, 'Unexpected video extension');
+    }
   });
 };
