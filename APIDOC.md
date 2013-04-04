@@ -6,7 +6,7 @@ This should be updated every time you change an endpoint.
 # Auth
 We're using a variant of X-Auth. Essentially, client sends over HTTPS:
 
-Body parameters:
+HTTP Headers:
 
 - ClientID
 - Client Secret

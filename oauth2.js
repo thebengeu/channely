@@ -18,9 +18,9 @@ var passport = require('passport'),
 exports.token = [
 passport.authenticate(['basic'], { session: false }),
   function(req, res) {
-    Client.findById(req.body.clientId, function (err, client) {
+    Client.findById(req.get('clientId'), function (err, client) {
       if (!client) { res.send(401, "No such client"); }
-      if (client.clientSecret != req.body.clientSecret) res.send(401);
+      if (client.clientSecret != req.get('clientSecret')) res.send(401);
     });
     var user = req.user;
     user.accessToken = utils.randomStr(256);
