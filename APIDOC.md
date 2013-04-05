@@ -312,7 +312,56 @@ __Failures:__
 - If a user tries to delete a channel he doesn't own, the API returns a __403__ error.
 
 ## Search Events
-TODO: FOR BENG TO FILL UP
+    
+    GET /events/search
+    
+with query params:
+
+- latitude: latitude of point
+- longitude: longitude of point
+- maxDistance: optional maximum distance in metres to search for events around point
+
+__Example:__
+
+    GET /events/search?latitude=1.342797&longitude=103.953536&maxDistance=1000
+    
+__Results:__
+
+```
+HTTP STATUS 200
+[
+  {
+    "name": "Friday Hacks #13",
+    "startDateTime": "2013-03-28T11:30:39.175Z",
+    "endDateTime": "2013-03-28T12:30:39.175Z",
+    "details": "Many many details",
+    "_channel": {
+      "name": "NUS Hackers",
+      "description": "",
+      "_id": "d35d493382d09ab2a7070325"
+    },
+    "_id": "51558baa0b8c492036000002",
+    "__v": 0,
+    "longitude": 103.953536,
+    "latitude": 1.342797
+  },
+  {
+    "name": "Friday Hacks #14",
+    "startDateTime": "2013-03-28T11:30:39.175Z",
+    "endDateTime": "2013-03-28T12:30:39.175Z",
+    "details": "Many many details",
+    "_channel": {
+      "name": "NUS Hackers",
+      "description": "",
+      "_id": "d35d493382d09ab2a7070325"
+    },
+    "_id": "51558b390b8c492036000001",
+    "__v": 0,
+    "longitude": 103.953538,
+    "latitude": 1.342795
+  }
+]
+```
 
 # Posts
 There are 3 kinds of posts: text, image and video. Each of these post types exist under their own domain.
@@ -442,3 +491,84 @@ __Results:__
 __Failures:__
 
 - If a user attempts to delete a post that is not associated with his account, or is not associated with any user account (is anonymous) the API will return a __403__ error.
+
+# HTTP Live Streaming
+The HLS endpoints are for creating and stopping video recordings, and uploading video chunks. The HLS playlist associated with the video will be regenerated every time any of the endpoints is called.
+
+## Create Video Recording
+	
+	POST /hls/recordings
+	
+with body params (example below):
+
+- startDate: 2013-03-15T04:54:47.636Z
+
+__Results:__
+
+```
+HTTP STATUS 201
+{
+  "_id" : "515e65b7ce4ec1642d000002",
+  "__v" : 0,
+  "startDate" : "2013-03-15T04:54:47.636Z",
+  "playlistURL" : "http://upthetreehouse.com/hls/515e65b7ce4ec1642d000002/playlist.m3u8"
+}
+```
+	
+## Stop Video Recording
+	
+	POST /hls/recordings/:id/stop
+
+with body params (example below):
+
+- endDate: 2013-03-15T05:54:47.636Z
+- endSeqNo: 217
+
+__Results:__
+
+```
+{
+  "_id" : "515e65b7ce4ec1642d000002",
+  "endDate" : "2013-03-15T05:54:47.636Z",
+  "startDate" : "2013-03-15T04:54:47.636Z",
+  "__v" : 0,
+  "playlistURL" : "http://upthetreehouse.com/hls/515e65b7ce4ec1642d000002/playlist.m3u8",
+  "endSeqNo" : 217
+}
+```
+	
+## Upload Video Chunk
+If video chunk is already in TS format, adds to the recording's playlist. Otherwise, if video chunk is in MP4 format, converts chunk before adding to the recording's playlist.
+	
+	POST /hls/recordings/:id/chunks
+
+with body params (example below):
+
+- duration: 10.0 (in seconds)
+- seqNo: 15
+
+and with the chunk attached as multipart/form-data, with name="chunk":
+
+```
+Content-Disposition: form-data; name="chunk"; filename="chunk.mp4"
+Content-Type: video/mp4
+```
+
+__Results:__
+
+```
+{
+  "__v": 0,
+  "duration": 10.0,
+  "seqNo": 15,
+  "url": "http://upthetreehouse.com/hls/5158187a7e9baf07dd000001/eb043264d298907035d786b91d49e3e7.ts",
+  "_recording": "5158187a7e9baf07dd000001",
+  "_id": "515e66c7ce4ec1642d000003""
+}
+```
+
+__Failures:__
+
+- If there is a problem encountered with processing the chunk, the API will return a __422__ Unprocessable Entity error.
+- If there is no HLS recording with the given ID, the API will return a __404__ error.
+- If the extension is not .ts or .mp4, the API will return a __500__ error.
