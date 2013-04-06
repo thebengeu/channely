@@ -8,8 +8,20 @@ var HLSRecording = require('../models/hlsrecording').HLSRecording;
 exports.index = function (req, res) {
   async.parallel([
     function (callback) {
+      var query = {
+        _channel: req.params.id
+      };
+      if (req.query.since || req.query.until) {
+        query.time = {};
+        if (req.query.since) {
+          query.time.$gte = req.query.since;
+        }
+        if (req.query.until) {
+          query.time.$lt = req.query.until;
+        }
+      }
       TextPost
-        .find({ _channel: req.params.id })
+        .find(query)
         .lean()
         .exec(function(err, textPosts) {
           if (err) return callback(err);
@@ -21,8 +33,20 @@ exports.index = function (req, res) {
         });
     },
     function (callback) {
+      var query = {
+        _channel: req.params.id
+      };
+      if (req.query.since || req.query.until) {
+        query.time = {};
+        if (req.query.since) {
+          query.time.$gte = req.query.since;
+        }
+        if (req.query.until) {
+          query.time.$lt = req.query.until;
+        }
+      }
       ImagePost
-        .find({ _channel: req.params.id })
+        .find(query)
         .lean()
         .exec(function(err, imagePosts) {
           if (err) return callback(err);
@@ -34,14 +58,27 @@ exports.index = function (req, res) {
         });
     },
     function (callback) {
+      var query = {
+        _channel: req.params.id
+      };
+      if (req.query.since || req.query.until) {
+        query.startDate = {};
+        if (req.query.since) {
+          query.startDate.$gte = req.query.since;
+        }
+        if (req.query.until) {
+          query.startDate.$lt = req.query.until;
+        }
+      }
       HLSRecording
-        .find({ _channel: req.params.id })
+        .find(query)
         .lean()
         .exec(function(err, videoPosts) {
           if (err) return callback(err);
 
           callback(null, videoPosts.map(function (videoPost) {
             videoPost.type = 'video';
+            videoPost.time = videoPost.startDate;
             return videoPost;
           }));
         });

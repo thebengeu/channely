@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 var hlsRecordingSchema = new mongoose.Schema({
     _channel: { type: String, ref:'Channel' },
-    startDate: { type: Date, required: true },
+    startDate: { type: Date, required: true, index: true },
     endDate: { type: Date },
     endSeqNo: { type: Number },
     playlistURL: { type: String, required: true }

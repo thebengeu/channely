@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 var imagePostSchema = new mongoose.Schema({
   _channel: { type: String, ref:'Channel' },
-  time: { type: Date, default: Date.now },
+  time: { type: Date, default: Date.now, index: true },
   content: { type: String, trim: true },
   url: { type: String, required: true, trim: true },
   owner: { type: String, ref: 'User' },
