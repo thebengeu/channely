@@ -11,6 +11,7 @@ var HLS_URL = 'http://upthetreehouse.com/hls/';
 var HLS_PLAYLIST_NAME = 'playlist.m3u8';
 var HLS_HEADER = '#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-TARGETDURATION:10\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0';
 var HLS_FOOTER = '#EXT-X-ENDLIST';
+var DEFAULT_THUMBNAIL_SIZE = '80x60';
 
 var generatePlaylist = function (hlsRecording, callback) {
   HLSChunk
@@ -75,6 +76,17 @@ exports.stopRecording = function (req, res) {
   });
 };
 
+var generateThumbnail = function (videoPath, size, callback) {
+  var proc = new ffmpeg({ source: videoPath })
+    .withSize(size)
+    .takeScreenshots({
+      count: 1,
+      filename: '%b_%r'
+    }, '/', function (err, filenames) {
+      callback(err, filenames[0]);
+    });
+}
+
 exports.createChunk = function (req, res) {
   HLSRecording.findById(req.params.id, function (err, hlsRecording) {
     if (err) return res.send(500, err);
@@ -102,11 +114,15 @@ exports.createChunk = function (req, res) {
           _recording: hlsRecording.id
         });
 
-        hlsChunk.save(function (err) {
-          err ? res.send(422, err) : res.send(201, hlsChunk);
+        generateThumbnail(newPath, DEFAULT_THUMBNAIL_SIZE, function (err, filename) {
+          if (err) return res.send(422, err);
 
-          // fire off generation of playlist, don't care about result.
-          generatePlaylist(hlsRecording);
+          hlsChunk.save(function (err) {
+            err ? res.send(422, err) : res.send(201, hlsChunk);
+
+            // fire off generation of playlist, don't care about result.
+            generatePlaylist(hlsRecording);
+          });
         });
       });
     } else if (extension === '.mp4') {
@@ -131,11 +147,15 @@ exports.createChunk = function (req, res) {
             _recording: hlsRecording.id
           });
 
-          hlsChunk.save(function (err) {
-            err ? res.send(422, err) : res.send(201, hlsChunk);
+          generateThumbnail(newPath, DEFAULT_THUMBNAIL_SIZE, function (err, filename) {
+            if (err) return res.send(422, err);
 
-            // fire off generation of playlist, don't care about result.
-            generatePlaylist(hlsRecording);
+            hlsChunk.save(function (err) {
+              err ? res.send(422, err) : res.send(201, hlsChunk);
+
+              // fire off generation of playlist, don't care about result.
+              generatePlaylist(hlsRecording);
+            });
           });
         });
     } else {
