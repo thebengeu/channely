@@ -48,11 +48,13 @@ exports.createRecording = function (req, res) {
     if (err) return res.send(422, err);
 
     hlsRecording.playlistURL = HLS_URL + hlsRecording.id + '/' + HLS_PLAYLIST_NAME;
-    hlsRecording.save(function (err) {
-      err ? res.send(422, err) : res.send(201, hlsRecording);
 
-      // fire off generation of playlist, don't care about result.
-      generatePlaylist(hlsRecording);
+    generatePlaylist(hlsRecording, function (err) {
+      if (err) return res.send(422, err);
+
+      hlsRecording.save(function (err) {
+        err ? res.send(422, err) : res.send(201, hlsRecording);
+      });
     });
   });
 };
@@ -66,13 +68,14 @@ exports.stopRecording = function (req, res) {
 
     hlsRecording.endDate = req.body.endDate;
     hlsRecording.endSeqNo = req.body.endSeqNo;
-    hlsRecording.save(function (err) {
-      err ? res.send(422, err) : res.send(hlsRecording);
-    });
 
-    // fire off generation of playlist, don't care about result.
-    // just in case all chunks have come in before stopRecording is called.
-    generatePlaylist(hlsRecording);
+    generatePlaylist(hlsRecording, function (err) {
+      if (err) return res.send(422, err);
+
+      hlsRecording.save(function (err) {
+        err ? res.send(422, err) : res.send(hlsRecording);
+      });
+    });
   });
 };
 
@@ -117,11 +120,12 @@ exports.createChunk = function (req, res) {
         generateThumbnail(newPath, DEFAULT_THUMBNAIL_SIZE, function (err, filename) {
           if (err) return res.send(422, err);
 
-          hlsChunk.save(function (err) {
-            err ? res.send(422, err) : res.send(201, hlsChunk);
+          generatePlaylist(hlsRecording, function (err) {
+            if (err) return res.send(422, err);
 
-            // fire off generation of playlist, don't care about result.
-            generatePlaylist(hlsRecording);
+            hlsChunk.save(function (err) {
+              err ? res.send(422, err) : res.send(201, hlsChunk);
+            });
           });
         });
       });
@@ -150,11 +154,12 @@ exports.createChunk = function (req, res) {
           generateThumbnail(newPath, DEFAULT_THUMBNAIL_SIZE, function (err, filename) {
             if (err) return res.send(422, err);
 
-            hlsChunk.save(function (err) {
-              err ? res.send(422, err) : res.send(201, hlsChunk);
+            generatePlaylist(hlsRecording, function (err) {
+              if (err) return res.send(422, err);
 
-              // fire off generation of playlist, don't care about result.
-              generatePlaylist(hlsRecording);
+              hlsChunk.save(function (err) {
+                err ? res.send(422, err) : res.send(201, hlsChunk);
+              });
             });
           });
         });
