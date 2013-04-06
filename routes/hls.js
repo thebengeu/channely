@@ -1,5 +1,6 @@
 var HLSRecording = require('../models/hlsrecording').HLSRecording,
-    HLSChunk = require('../models/hlschunk').HLSChunk;
+    HLSChunk = require('../models/hlschunk').HLSChunk,
+    Channel = require('../models/channel').Channel;
 
 var ffmpeg = require('fluent-ffmpeg');
 var fs = require('fs');
@@ -40,22 +41,29 @@ var generatePlaylist = function (hlsRecording, callback) {
 };
 
 exports.createRecording = function (req, res) {
-  var hlsRecording = new HLSRecording({
-    startDate: req.body.startDate
-  });
-  var playlistDir = path.join(HLS_FILE_PATH, hlsRecording.id);
-  fs.mkdir(playlistDir, function (err) {
-    if (err) return res.send(422, err);
-
-    hlsRecording.playlistURL = HLS_URL + hlsRecording.id + '/' + HLS_PLAYLIST_NAME;
-
-    generatePlaylist(hlsRecording, function (err) {
-      if (err) return res.send(422, err);
-
-      hlsRecording.save(function (err) {
-        err ? res.send(422, err) : res.send(201, hlsRecording);
+  Channel.findById(req.body._channel, function (err, channel) {
+    if (err) { res.send(500, err); }
+    else if (!channel) { res.send(404, "No such channel exists!"); }
+    else {
+      var hlsRecording = new HLSRecording({
+        _channel: channel._id,
+        startDate: req.body.startDate
       });
-    });
+      var playlistDir = path.join(HLS_FILE_PATH, hlsRecording.id);
+      fs.mkdir(playlistDir, function (err) {
+        if (err) return res.send(422, err);
+
+        hlsRecording.playlistURL = HLS_URL + hlsRecording.id + '/' + HLS_PLAYLIST_NAME;
+
+        generatePlaylist(hlsRecording, function (err) {
+          if (err) return res.send(422, err);
+
+          hlsRecording.save(function (err) {
+            err ? res.send(422, err) : res.send(201, hlsRecording);
+          });
+        });
+      });
+    }
   });
 };
 

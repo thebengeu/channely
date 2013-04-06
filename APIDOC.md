@@ -502,6 +502,7 @@ The HLS endpoints are for creating and stopping video recordings, and uploading 
 with body params (example below):
 
 - startDate: 2013-03-15T04:54:47.636Z
+- _channel: 515e65b7ce4ec1642d000002
 
 __Results:__
 
@@ -511,7 +512,8 @@ HTTP STATUS 201
   "_id" : "515e65b7ce4ec1642d000002",
   "__v" : 0,
   "startDate" : "2013-03-15T04:54:47.636Z",
-  "playlistURL" : "http://upthetreehouse.com/hls/515e65b7ce4ec1642d000002/playlist.m3u8"
+  "playlistURL" : "http://upthetreehouse.com/hls/515e65b7ce4ec1642d000002/playlist.m3u8",
+  "_channel" : "515e65b7ce4ec1642d000002"
 }
 ```
 	
