@@ -17,7 +17,7 @@ exports.index = function (req, res) {
 };
 
 exports.create = function (req, res) {
-  Channel.findById(req.body.channelID, function (err, channel) {
+  Channel.findById(req.params.id, function (err, channel) {
     if (err) { res.send(500, err); }
     else if (!channel) { res.send(404, "No such channel exists!"); }
     else {
