@@ -1,5 +1,6 @@
 var Event = require('../models/event').Event,
     Channel = require('../models/channel').Channel,
+    User = require('../models/user').User,
     passport = require('passport');
 
 // Endpoint: /channels/:id/events
@@ -81,9 +82,9 @@ exports.search = function (req, res) {
     .exec(function (err, events) {
       if (err) return res.send(500, err);
 
-      Event.populate(events, {
+      User.populate(events, {
         path: '_channel.owner',
-        select: '_id name'
+        select: '_id username'
       }, function (err, events) {
         events = events.map(function (event) {
           event.longitude = event.location[0];
