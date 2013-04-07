@@ -26,7 +26,7 @@ exports.create = function (req, res) {
       var newPath = path.join(PUBLIC_IMAGES_FILE_PATH, baseName);
       mv(oldPath, newPath, function (err) {
         if (err) {
-          res.send(422, err);
+          return res.send(422, err);
         }
         var imageProperties = {
           content: req.body.content,
