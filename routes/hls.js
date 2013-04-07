@@ -1,6 +1,7 @@
 var HLSRecording = require('../models/hlsrecording').HLSRecording,
     HLSChunk = require('../models/hlschunk').HLSChunk,
     VideoThumbnailPost = require('../models/videothumbnailpost').VideoThumbnailPost,
+  User = require('../models/user').User,
     Channel = require('../models/channel').Channel;
 
 var ffmpeg = require('fluent-ffmpeg');
@@ -59,9 +60,52 @@ exports.createRecording = function (req, res) {
         generatePlaylist(hlsRecording, function (err) {
           if (err) return res.send(422, err);
 
-          hlsRecording.save(function (err) {
-            err ? res.send(422, err) : res.send(201, hlsRecording);
-          });
+          var token = undefined;
+
+          if (req.headers && req.headers['authorization']) {
+            var parts = req.headers['authorization'].split(' ');
+            if (parts.length == 2) {
+              var scheme = parts[0]
+                , credentials = parts[1];
+
+              if (/Bearer/i.test(scheme)) {
+                token = credentials;
+              }
+            }
+          }
+
+          if (req.body && req.body['access_token']) {
+            token = req.body['access_token'];
+          }
+
+          if (req.query && req.query['access_token']) {
+            token = req.query['access_token'];
+          }
+
+          // if there's an access token, get the user and attach it to this recording
+          // otherwise just save a username
+          if (token) {
+            User.findOne({accessToken: token },
+              function(err, user){
+                if (err || !user) {
+                  hlsRecording.username = req.body.username;
+                } else if (user) {
+                  hlsRecording.owner = user._id;
+                  hlsRecording.username = user.username;
+                }
+
+                hlsRecording.save(function (err) {
+                  err ? res.send(422, err) : res.send(201, hlsRecording);
+                });
+              });
+          } else {
+            if (req.body.username)
+              hlsRecording.username = req.body.username;
+
+            hlsRecording.save(function (err) {
+              err ? res.send(422, err) : res.send(201, hlsRecording);
+            });
+          }
         });
       });
     }

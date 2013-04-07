@@ -7,7 +7,9 @@ var hlsRecordingSchema = new mongoose.Schema({
     endDate: { type: Date },
     endSeqNo: { type: Number },
     playlistURL: { type: String, required: true },
-    time: { type: Date, default: Date.now, index: true }
+    time: { type: Date, default: Date.now, index: true },
+    owner: { type: String, ref: 'User' },
+    username: { type: String, default: 'Anonymous' }
 });
 
 var hlsRecordingModel = mongoose.model('HLSRecording', hlsRecordingSchema);
