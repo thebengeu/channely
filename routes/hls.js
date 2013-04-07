@@ -1,5 +1,6 @@
 var HLSRecording = require('../models/hlsrecording').HLSRecording,
     HLSChunk = require('../models/hlschunk').HLSChunk,
+    VideoThumbnailPost = require('../models/videothumbnailpost').VideoThumbnailPost,
     Channel = require('../models/channel').Channel;
 
 var ffmpeg = require('fluent-ffmpeg');
@@ -98,6 +99,55 @@ var generateThumbnail = function (videoPath, size, callback) {
     });
 }
 
+var processChunk = function (req, hlsRecording, newPath, baseName, callback) {
+  var url = HLS_URL + hlsRecording.id + '/' + baseName;
+
+  var hlsChunk = new HLSChunk({
+    duration: req.body.duration,
+    filePath: newPath,
+    seqNo: req.body.seqNo,
+    url: url,
+    _recording: hlsRecording.id
+  });
+
+  // Generate thumbnail for every minute of video
+  if (hlsChunk.seqNo % 6 === 0) {
+    generateThumbnail(newPath, DEFAULT_THUMBNAIL_SIZE, function (err, filename) {
+      if (err) return callback(err);
+
+      var thumbnailTime = hlsRecording.startDate;
+      thumbnailTime.setSeconds(thumbnailTime.getSeconds() + 10 * hlsChunk.seqNo);
+
+      var videoThumbnailPost = new VideoThumbnailPost({
+        _channel: hlsRecording._channel,
+        _video: hlsRecording._id,
+        time: thumbnailTime,
+        url: HLS_URL + hlsRecording.id + '/' + path.basename(filename)
+      });
+
+      hlsChunk.save(function (err) {
+        if (err) return callback(err);
+
+        generatePlaylist(hlsRecording, function (err) {
+          if (err) return callback(err);
+
+          videoThumbnailPost.save(function (err) {
+            callback(err, hlsChunk);
+          });
+        });
+      });
+    });
+  } else {
+    hlsChunk.save(function (err) {
+      if (err) return callback(err);
+
+      generatePlaylist(hlsRecording, function (err) {
+        callback(err, hlsChunk);
+      });
+    });
+  }
+}
+
 exports.createChunk = function (req, res) {
   HLSRecording.findById(req.params.id, function (err, hlsRecording) {
     if (err) return res.send(500, err);
@@ -115,31 +165,13 @@ exports.createChunk = function (req, res) {
       mv(oldPath, newPath, function (err) {
         if (err) return res.send(422, err);
 
-        var url = HLS_URL + hlsRecording.id + '/' + baseName;
-
-        var hlsChunk = new HLSChunk({
-          duration: req.body.duration,
-          filePath: newPath,
-          seqNo: req.body.seqNo,
-          url: url,
-          _recording: hlsRecording.id
-        });
-
-        generateThumbnail(newPath, DEFAULT_THUMBNAIL_SIZE, function (err, filename) {
-          if (err) return res.send(422, err);
-
-          generatePlaylist(hlsRecording, function (err) {
-            if (err) return res.send(422, err);
-
-            hlsChunk.save(function (err) {
-              err ? res.send(422, err) : res.send(201, hlsChunk);
-            });
-          });
+        processChunk(req, hlsRecording, newPath, baseName, function (err, hlsChunk) {
+          err ? res.send(422, err) : res.send(201, hlsChunk);
         });
       });
     } else if (extension === '.mp4') {
-      var newBaseName = path.basename(oldPath, extension) + '.ts';
-      newPath = path.join(HLS_FILE_PATH, hlsRecording.id, newBaseName);
+      baseName = path.basename(oldPath, extension) + '.ts';
+      newPath = path.join(HLS_FILE_PATH, hlsRecording.id, baseName);
 
       var proc = new ffmpeg({ source: oldPath })
         .withVideoCodec('copy')
@@ -149,26 +181,8 @@ exports.createChunk = function (req, res) {
         .saveToFile(newPath, function (stdout, stderr) {
           if (stderr) return res.send(422, stderr);
 
-          var url = HLS_URL + hlsRecording.id + '/' + newBaseName;
-
-          var hlsChunk = new HLSChunk({
-            duration: req.body.duration,
-            filePath: newPath,
-            seqNo: req.body.seqNo,
-            url: url,
-            _recording: hlsRecording.id
-          });
-
-          generateThumbnail(newPath, DEFAULT_THUMBNAIL_SIZE, function (err, filename) {
-            if (err) return res.send(422, err);
-
-            generatePlaylist(hlsRecording, function (err) {
-              if (err) return res.send(422, err);
-
-              hlsChunk.save(function (err) {
-                err ? res.send(422, err) : res.send(201, hlsChunk);
-              });
-            });
+          processChunk(req, hlsRecording, newPath, baseName, function (err, hlsChunk) {
+            err ? res.send(422, err) : res.send(201, hlsChunk);
           });
         });
     } else {
