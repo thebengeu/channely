@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 var videoThumbnailPostSchema = new mongoose.Schema({
   _channel: { type: String, ref:'Channel' },
   _video: { type: String, ref: 'HLSRecording' },
+  startDate: { type: Date, required: true },
   time: { type: Date, default: Date.now, index: true },
   url: { type: String, required: true, trim: true }
 });
