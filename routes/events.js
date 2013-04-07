@@ -79,12 +79,19 @@ exports.search = function (req, res) {
     .populate('_channel')
     .lean()
     .exec(function (err, events) {
-      events = events.map(function (event) {
-        event.longitude = event.location[0];
-        event.latitude = event.location[1];
-        delete event['location'];
-        return event;
+      if (err) return res.send(500, err);
+
+      Event.populate(events, {
+        path: '_channel.owner',
+        select: '_id name'
+      }, function (err, events) {
+        events = events.map(function (event) {
+          event.longitude = event.location[0];
+          event.latitude = event.location[1];
+          delete event['location'];
+          return event;
+        });
+        err ? res.send(500, err) : res.json(events);
       });
-      err ? res.send(500, err) : res.json(events);
     });
 };
