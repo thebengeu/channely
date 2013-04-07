@@ -4,84 +4,47 @@ var ImagePost = require('../models/imagepost').ImagePost;
 var TextPost = require('../models/textpost').TextPost;
 var Channel = require('../models/channel').Channel;
 var HLSRecording = require('../models/hlsrecording').HLSRecording;
+var VideoThumbnailPost = require('../models/videothumbnailpost').VideoThumbnailPost;
+
+var getPosts = function (req, model, type, callback) {
+  var query = {
+    _channel: req.params.id
+  };
+  if (req.query.since || req.query.until) {
+    query.time = {};
+    if (req.query.since) {
+      query.time.$gte = req.query.since;
+    }
+    if (req.query.until) {
+      query.time.$lt = req.query.until;
+    }
+  }
+  model
+    .find(query)
+    .lean()
+    .exec(function(err, posts) {
+      if (err) return callback(err);
+
+      callback(null, posts.map(function (post) {
+        post.type = type;
+        return post;
+      }));
+    });
+}
 
 exports.index = function (req, res) {
   async.parallel([
     function (callback) {
-      var query = {
-        _channel: req.params.id
-      };
-      if (req.query.since || req.query.until) {
-        query.time = {};
-        if (req.query.since) {
-          query.time.$gte = req.query.since;
-        }
-        if (req.query.until) {
-          query.time.$lt = req.query.until;
-        }
-      }
-      TextPost
-        .find(query)
-        .lean()
-        .exec(function(err, textPosts) {
-          if (err) return callback(err);
-
-          callback(null, textPosts.map(function (textPost) {
-            textPost.type = 'text';
-            return textPost;
-          }));
-        });
+      getPosts(req, TextPost, 'text', callback);
     },
     function (callback) {
-      var query = {
-        _channel: req.params.id
-      };
-      if (req.query.since || req.query.until) {
-        query.time = {};
-        if (req.query.since) {
-          query.time.$gte = req.query.since;
-        }
-        if (req.query.until) {
-          query.time.$lt = req.query.until;
-        }
-      }
-      ImagePost
-        .find(query)
-        .lean()
-        .exec(function(err, imagePosts) {
-          if (err) return callback(err);
-
-          callback(null, imagePosts.map(function (imagePost) {
-            imagePost.type = 'image';
-            return imagePost;
-          }));
-        });
+      getPosts(req, ImagePost, 'image', callback);
     },
     function (callback) {
-      var query = {
-        _channel: req.params.id
-      };
-      if (req.query.since || req.query.until) {
-        query.startDate = {};
-        if (req.query.since) {
-          query.startDate.$gte = req.query.since;
-        }
-        if (req.query.until) {
-          query.startDate.$lt = req.query.until;
-        }
-      }
-      HLSRecording
-        .find(query)
-        .lean()
-        .exec(function(err, videoPosts) {
-          if (err) return callback(err);
-
-          callback(null, videoPosts.map(function (videoPost) {
-            videoPost.type = 'video';
-            videoPost.time = videoPost.startDate;
-            return videoPost;
-          }));
-        });
+      getPosts(req, HLSRecording, 'video', callback);
+    },
+    function (callback) {
+      getPosts(req, VideoThumbnailPost, 'videoThumbnail', callback);
     }
   ], function (err, results) {
     if (err) {
