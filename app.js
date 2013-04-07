@@ -11,6 +11,7 @@ var channels = require('./routes/channels'),
     posts = require('./routes/posts'),
     imageposts = require('./routes/imageposts'),
     textposts = require('./routes/textposts'),
+    slideposts = require('./routes/slideposts'),
     users = require('./routes/users'),
     clients = require('./routes/clients'),
     hls = require('./routes/hls'),
@@ -85,6 +86,11 @@ db.once('open', function callback () {
   app.post('/hls/recordings', hls.createRecording);
   app.post('/hls/recordings/:id/stop', hls.stopRecording);
   app.post('/hls/recordings/:id/chunks', hls.createChunk);
+
+  // Slide routes
+  app.get('/channels/:id/posts/slide', slideposts.index);
+  app.post('/channels/:id/posts/slide', slideposts.create);
+  app.delete('/posts/slide/:id', slideposts.delete);
 });
 
 var options = {
