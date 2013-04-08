@@ -165,7 +165,7 @@ var processChunk = function (req, hlsRecording, newPath, baseName, callback) {
       var videoThumbnailPost = new VideoThumbnailPost({
         _channel: hlsRecording._channel,
         _video: hlsRecording._id,
-        time: thumbnailTime,
+        startDate: thumbnailTime,
         url: HLS_URL + hlsRecording.id + '/' + path.basename(filename)
       });
 
