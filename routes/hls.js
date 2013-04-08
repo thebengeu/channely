@@ -11,7 +11,6 @@ var path = require('path');
 
 var HLS_FILE_PATH = '/ebs/public/hls/';
 var HLS_URL = 'http://upthetreehouse.com/hls/';
-var HLS_PLAYLIST_NAME = 'playlist.m3u8';
 var HLS_HEADER = '#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-TARGETDURATION:10\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0';
 var HLS_FOOTER = '#EXT-X-ENDLIST';
 var DEFAULT_THUMBNAIL_SIZE = '80x60';
@@ -35,7 +34,7 @@ var generatePlaylist = function (hlsRecording, callback) {
 
       if (hlsRecording.endSeqNo === i - 1) entries.push(HLS_FOOTER);
 
-      fs.writeFile(path.join(HLS_FILE_PATH, hlsRecording.id, HLS_PLAYLIST_NAME),
+      fs.writeFile(path.join(HLS_FILE_PATH, hlsRecording.id, hlsRecording.id + '.m3u8'),
         entries.join('\n'), function (err) {
           if (callback) callback(err);
         });
@@ -55,7 +54,7 @@ exports.createRecording = function (req, res) {
       fs.mkdir(playlistDir, function (err) {
         if (err) return res.send(422, err);
 
-        hlsRecording.playlistURL = HLS_URL + hlsRecording.id + '/' + HLS_PLAYLIST_NAME;
+        hlsRecording.playlistURL = HLS_URL + hlsRecording.id + '/' + hlsRecording.id + '.m3u8';
 
         generatePlaylist(hlsRecording, function (err) {
           if (err) return res.send(422, err);
