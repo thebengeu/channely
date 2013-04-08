@@ -1,7 +1,7 @@
 var HLSRecording = require('../models/hlsrecording').HLSRecording,
     HLSChunk = require('../models/hlschunk').HLSChunk,
     VideoThumbnailPost = require('../models/videothumbnailpost').VideoThumbnailPost,
-  User = require('../models/user').User,
+    User = require('../models/user').User,
     Channel = require('../models/channel').Channel;
 
 var ffmpeg = require('fluent-ffmpeg');
@@ -11,7 +11,7 @@ var path = require('path');
 
 var HLS_FILE_PATH = '/ebs/public/hls/';
 var HLS_URL = 'http://upthetreehouse.com/hls/';
-var HLS_HEADER = '#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-TARGETDURATION:10\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0';
+var HLS_HEADER = '#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-TARGETDURATION:11\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0';
 var HLS_FOOTER = '#EXT-X-ENDLIST';
 var DEFAULT_THUMBNAIL_SIZE = '80x60';
 
@@ -29,7 +29,7 @@ var generatePlaylist = function (hlsRecording, callback) {
         var chunk = chunks[i];
         if (chunk.seqNo != i) break;
 
-        entries.push('#EXTINF:' + chunk.duration + ',\n' + path.basename(chunk.filePath));
+        entries.push('#EXTINF:' + chunk.duration.toFixed(3) + ',\n' + path.basename(chunk.filePath));
       }
 
       if (hlsRecording.endSeqNo === i - 1) entries.push(HLS_FOOTER);
