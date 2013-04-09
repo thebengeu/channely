@@ -30,7 +30,8 @@ exports.create = [
     var channel = new Channel({
       name: req.body.name,
       createdAt: req.body.createdAt,
-      owner: req.user._id
+      owner: req.user._id,
+      hashTag: req.body.hashTag
     });
     channel.save(function (err) {
       err ? res.send(422, err) : res.send(201, channel);
@@ -48,6 +49,7 @@ passport.authenticate('bearer', {session: false}),
         res.send(403); // authorizaton not granted
       } else {
         channel.name = req.body.name;
+        channel.hashTag = req.body.hashTag;
         channel.save(function (err) {
           err ? res.send(422, err) : res.send(channel);
         });

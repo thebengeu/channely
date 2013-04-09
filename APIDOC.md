@@ -136,6 +136,7 @@ HTTP STATUS 200
     "__v" : 0,
     "createdAt" : "2013-03-31T06:43:44.654Z",
     "name" : "Friday Hacks"
+    "hashTag": "#fridayhacks"
   },
   {
     "owner" : "515409c602df6886b8000001",
@@ -143,6 +144,7 @@ HTTP STATUS 200
     "__v" : 0,
     "createdAt" : "2013-03-31T06:43:44.655Z",
     "name" : "Melock"
+    "hashTag": "#melock"
   },
   {
     "owner" : "515409c602df6886b8000001",
@@ -150,6 +152,7 @@ HTTP STATUS 200
     "__v" : 0,
     "createdAt" : "2013-03-31T06:43:44.655Z",
     "name" : "Noncey"
+    "hashTag": "#noncey"
   }
 ]
 ```
@@ -162,6 +165,7 @@ The create channel endpoint is protected, and requires an access_token.
 with parameters:
 
 - name: a_unique_channel_name
+- hashTag: #nushackers
     
 __Results:__
 
@@ -171,7 +175,8 @@ HTTP STATUS 201
   "owner" : "515409c602df6886b8000001",
   "_id" : "5157db98b59e30870a000001",
   "__v" : 0,
-  "name" : "SuperTest"
+  "name" : "SuperTest",
+  "hashTag": "#nushackers"
 }
 ```
 
@@ -195,7 +200,8 @@ HTTP STATUS 200
   "owner" : "515409c602df6886b8000001",
   "__v" : 0,
   "createdAt" : "2013-03-31T07:05:14.855Z",
-  "name" : "Blah"
+  "name" : "Blah",
+  "hashTag": "#nushackers"
 }
 ```
 
