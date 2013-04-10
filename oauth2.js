@@ -27,7 +27,7 @@ passport.authenticate(['basic'], { session: false }),
     user.save(function (err) {
       err? res.send(422, err) : res.json(200, {
         username: user.username,
-        userId: user._id,
+        _id: user._id,
         accessToken: user.accessToken });
     });
   }
