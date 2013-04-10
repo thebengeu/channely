@@ -11,7 +11,16 @@ exports.index = function (req, res) {
       .exec(function (err, channels) {
         err ? res.send(500, err) : res.json(channels);
       });
-}
+};
+
+exports.listChannelsForOwner = function (req, res) {
+  Channel
+    .find({ owner: req.params.id })
+    .populate('owner', '_id username')
+    .exec(function (err, channels) {
+      err ? res.send(500, err) : res.json(channels);
+    });
+};
 
 exports.show = function (req, res) {
     Channel
@@ -20,7 +29,7 @@ exports.show = function (req, res) {
       .exec(function (err, channel) {
         !channel ? res.send(404) : res.json(channel);
       });
-}
+};
 
 // Channel create, params:
 // name:
@@ -44,7 +53,7 @@ exports.create = [
       });
     });
   }
-]
+];
 
 exports.update = [
 passport.authenticate('bearer', {session: false}),
@@ -70,7 +79,7 @@ passport.authenticate('bearer', {session: false}),
       }
     });
   }
-]
+];
 
 exports.delete = [
 passport.authenticate('bearer', {session: false}),
@@ -87,4 +96,4 @@ passport.authenticate('bearer', {session: false}),
       }
     });
   }
-]
+];

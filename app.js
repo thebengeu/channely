@@ -62,6 +62,7 @@ db.once('open', function callback () {
   app.post('/channels', channels.create);
   app.put('/channels/:id', channels.update);
   app.delete('/channels/:id', channels.delete);
+  app.get('/users/:id/channels', channels.listChannelsForOwner);
 
   // Event routes
   app.get('/channels/:id/events', events.index);
