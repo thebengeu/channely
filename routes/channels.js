@@ -34,7 +34,14 @@ exports.create = [
       hashTag: req.body.hashTag
     });
     channel.save(function (err) {
-      err ? res.send(422, err) : res.send(201, channel);
+      if (err) return res.send(422, err);
+
+      User.populate(channel, {
+        path: 'owner',
+        select: '_id username'
+      }, function (err, channel) {
+        err ? res.send(422, err) : res.send(201, channel);
+      });
     });
   }
 ]
@@ -51,7 +58,14 @@ passport.authenticate('bearer', {session: false}),
         channel.name = req.body.name;
         channel.hashTag = req.body.hashTag;
         channel.save(function (err) {
-          err ? res.send(422, err) : res.send(channel);
+          if (err) return res.send(422, err);
+
+          User.populate(channel, {
+            path: 'owner',
+            select: '_id username'
+          }, function (err, channel) {
+            err ? res.send(422, err) : res.send(channel);
+          });
         });
       }
     });
