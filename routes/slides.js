@@ -10,7 +10,7 @@ var async = require('async');
 var mv = require('mv');
 var path = require('path');
 
-var PUBLIC_SLIDES_FILE_PATH = '/Users/beng/ebs/public/slides/';
+var PUBLIC_SLIDES_FILE_PATH = '/ebs/public/slides/';
 var PUBLIC_SLIDES_URL = 'http://upthetreehouse.com/slides/';
 
 exports.index = function (req, res) {
