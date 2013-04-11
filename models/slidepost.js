@@ -3,12 +3,9 @@ var mongoose = require('mongoose'),
 
 var slidePostSchema = new mongoose.Schema({
   _channel: { type: String, ref:'Channel' },
+  _slidesPost: { type: String, ref: 'SlidesPost' },
   time: { type: Date, default: Date.now, index: true },
-  content: { type: String, trim: true },
-  slideUrls: { type: [String] },
-  url: { type: String, required: true, trim: true },
-  owner: { type: String, ref: 'User' },
-  username: { type: String, default: 'Anonymous' }
+  url: { type: String, required: true, trim: true }
 });
 
 var slidePostModel = mongoose.model('SlidePost', slidePostSchema);

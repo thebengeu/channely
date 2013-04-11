@@ -5,6 +5,7 @@ var TextPost = require('../models/textpost').TextPost;
 var Channel = require('../models/channel').Channel;
 var HLSRecording = require('../models/hlsrecording').HLSRecording;
 var VideoThumbnailPost = require('../models/videothumbnailpost').VideoThumbnailPost;
+var SlidesPost = require('../models/slidespost').SlidesPost;
 var SlidePost = require('../models/slidepost').SlidePost;
 
 var getPosts = function (req, model, type, callback) {
@@ -48,7 +49,10 @@ exports.index = function (req, res) {
       getPosts(req, VideoThumbnailPost, 'videoThumbnail', callback);
     },
     function (callback) {
-      getPosts(req, SlidePost, 'slides', callback);
+      getPosts(req, SlidesPost, 'slides', callback);
+    },
+    function (callback) {
+      getPosts(req, SlidePost, 'slide', callback);
     }
   ], function (err, results) {
     if (err) {
