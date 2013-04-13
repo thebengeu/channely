@@ -58,6 +58,7 @@ db.once('open', function callback () {
 
   // Channel routes
   app.get('/channels', channels.index);
+  app.get('/channels/search', channels.search);
   app.get('/channels/:id', channels.show);
   app.post('/channels', channels.create);
   app.put('/channels/:id', channels.update);

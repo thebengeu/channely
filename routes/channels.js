@@ -97,3 +97,17 @@ passport.authenticate('bearer', {session: false}),
     });
   }
 ];
+
+exports.search = function (req, res) {
+  var query = {};
+  if (req.query.name) {
+    query.name = { $regex: req.query.name, $options: 'i' };
+  }
+  Channel
+    .find(query)
+    .populate('owner', '_id username')
+    .lean()
+    .exec(function (err, channels) {
+        err ? res.send(500, err) : res.json(channels);
+    });
+};

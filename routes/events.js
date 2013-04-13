@@ -75,6 +75,9 @@ exports.search = function (req, res) {
       query.location.$maxDistance = req.query.maxDistance / MEAN_RADIUS_OF_EARTH_IN_M;
     }
   }
+  if (req.query.name) {
+    query.name = { $regex: req.query.name, $options: 'i' };
+  }
   Event
     .find(query)
     .populate('_channel')
