@@ -15,7 +15,7 @@ var getPosts = function (req, model, type, callback) {
   if (req.query.since || req.query.until) {
     query.time = {};
     if (req.query.since) {
-      query.time.$gte = req.query.since;
+      query.time.$gt = req.query.since;
     }
     if (req.query.until) {
       query.time.$lt = req.query.until;
