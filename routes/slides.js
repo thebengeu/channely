@@ -68,11 +68,11 @@ exports.create = function (req, res) {
 
             exec('pdftoppm -jpeg -scale-to 1024 ' + newPath + ' slide', {
               cwd: newDir
-            }, function (error, stdout, stderr) {
-              if (error) return res.send(422, err);
+            }, function (err, stdout, stderr) {
+              if (err) return res.send(422, err);
 
               fs.readdir(newDir, function (err, files) {
-                if (error) return res.send(422, err);
+                if (err) return res.send(422, err);
 
                 var token = undefined;
 
