@@ -5,6 +5,7 @@ var ImagePost = require('../models/imagepost').ImagePost,
 
 var mv = require('mv');
 var path = require('path');
+var im = require('imagemagick');
 
 var PUBLIC_IMAGES_FILE_PATH = '/ebs/public/images/';
 var PUBLIC_IMAGES_URL = 'http://upthetreehouse.com/images/';
@@ -28,60 +29,82 @@ exports.create = function (req, res) {
         if (err) {
           return res.send(422, err);
         }
-        var imageProperties = {
-          content: req.body.content,
-          url: PUBLIC_IMAGES_URL + baseName,
-          _channel: channel._id
-        };
 
-        var token = undefined;
-
-        if (req.headers && req.headers['authorization']) {
-          var parts = req.headers['authorization'].split(' ');
-          if (parts.length == 2) {
-            var scheme = parts[0]
-              , credentials = parts[1];
-
-            if (/Bearer/i.test(scheme)) {
-              token = credentials;
-            }
+        im.identify(['-format', '%wx%h', newPath], function (err, output) {
+          if (err) {
+            return res.send(422, err);
           }
-        }
 
-        if (req.body && req.body['access_token']) {
-          token = req.body['access_token'];
-        }
+          var dimensions = output.split('x');
 
-        if (req.query && req.query['access_token']) {
-          token = req.query['access_token'];
-        }
+          im.resize({
+            srcPath: newPath,
+            dstPath: PUBLIC_IMAGES_FILE_PATH + 'thumbs/' + baseName,
+            width: 240
+          }, function (err, stdout, stderr) {
+            if (err) {
+              return res.send(422, err);
+            }
 
-        // if there's an access token, get the user and attach it to this post
-        // otherwise just save a username
-        if (token) {
-          User.findOne({accessToken: token },
-            function(err, user){
-              if (err || !user) {
-                imageProperties.username = req.body.username;
-              } else if (user) {
-                imageProperties.owner = user._id;
-                imageProperties.username = user.username;
+            var imageProperties = {
+              content: req.body.content,
+              url: PUBLIC_IMAGES_URL + baseName,
+              thumbUrl: PUBLIC_IMAGES_URL + 'thumbs/' + baseName,
+              width: +dimensions[0],
+              height: +dimensions[1],
+              _channel: channel._id
+            };
+
+            var token = undefined;
+
+            if (req.headers && req.headers['authorization']) {
+              var parts = req.headers['authorization'].split(' ');
+              if (parts.length == 2) {
+                var scheme = parts[0]
+                  , credentials = parts[1];
+
+                if (/Bearer/i.test(scheme)) {
+                  token = credentials;
+                }
               }
+            }
+
+            if (req.body && req.body['access_token']) {
+              token = req.body['access_token'];
+            }
+
+            if (req.query && req.query['access_token']) {
+              token = req.query['access_token'];
+            }
+
+            // if there's an access token, get the user and attach it to this post
+            // otherwise just save a username
+            if (token) {
+              User.findOne({accessToken: token },
+                function(err, user){
+                  if (err || !user) {
+                    imageProperties.username = req.body.username;
+                  } else if (user) {
+                    imageProperties.owner = user._id;
+                    imageProperties.username = user.username;
+                  }
+
+                  var imagePost = new ImagePost(imageProperties);
+                  imagePost.save(function (err) {
+                    err ? res.send(422, err) : res.send(201, imagePost);
+                  });
+                });
+            } else {
+              if (req.body.username)
+                imageProperties.username = req.body.username;
 
               var imagePost = new ImagePost(imageProperties);
               imagePost.save(function (err) {
                 err ? res.send(422, err) : res.send(201, imagePost);
               });
-            });
-        } else {
-          if (req.body.username)
-            imageProperties.username = req.body.username;
-
-          var imagePost = new ImagePost(imageProperties);
-          imagePost.save(function (err) {
-            err ? res.send(422, err) : res.send(201, imagePost);
+            }
           });
-        }
+        });
       });
     }
   });
