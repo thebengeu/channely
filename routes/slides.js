@@ -9,6 +9,7 @@ var SlidePost = require('../models/slidepost').SlidePost,
 var async = require('async');
 var mv = require('mv');
 var path = require('path');
+var im = require('imagemagick');
 
 var PUBLIC_SLIDES_FILE_PATH = '/ebs/public/slides/';
 var PUBLIC_SLIDES_URL = 'http://upthetreehouse.com/slides/';
@@ -20,20 +21,40 @@ exports.index = function (req, res) {
     });
 };
 
-var savePosts = function(slidesPost, channel, files, baseUrl, callback) {
+var savePosts = function(slidesPost, channel, newDir, files, baseUrl, callback) {
   slidesPost.save(function (err) {
     if (err) return callback(err);
 
     async.each(files.filter(function (file) {
       return path.extname(file) === '.jpg';
     }), function(slideImageFile, cb) {
-      var slidePost = new SlidePost({
-        _channel: channel._id,
-        _slidesPost: slidesPost._id,
-        url: baseUrl + slideImageFile
-      });
-      slidePost.save(function (err) {
-        cb(err);
+      var newPath = path.join(newDir, slideImageFile);
+
+      im.identify(['-format', '%wx%h', newPath], function (err, output) {
+        if (err) return cb(err);
+
+        var dimensions = output.split('x');
+        var thumbFileName = slideImageFile.slice(0, -4) + '-thumb.jpg';
+
+        im.resize({
+          srcPath: newPath,
+          dstPath: path.join(newDir, thumbFileName),
+          width: 240
+        }, function (err, stdout, stderr) {
+          if (err) return cb(err);
+
+          var slidePost = new SlidePost({
+            _channel: channel._id,
+            _slidesPost: slidesPost._id,
+            url: baseUrl + slideImageFile,
+            thumbUrl: baseUrl + thumbFileName,
+            width: +dimensions[0],
+            height: +dimensions[1]
+          });
+          slidePost.save(function (err) {
+            cb(err);
+          });
+        });
       });
     }, function (err) {
       callback(err, slidesPost);
@@ -108,7 +129,7 @@ exports.create = function (req, res) {
                         slidesPost.username = user.username;
                       }
 
-                      savePosts(slidesPost, channel, files, baseUrl, function (err, slidesPost) {
+                      savePosts(slidesPost, channel, newDir, files, baseUrl, function (err, slidesPost) {
                         err ? res.send(422, err) : res.send(201, slidesPost);
                       });
                     });
@@ -116,7 +137,7 @@ exports.create = function (req, res) {
                   if (req.body.username)
                     slidesPost.username = req.body.username;
 
-                  savePosts(slidesPost, channel, files, baseUrl, function (err, slidesPost) {
+                  savePosts(slidesPost, channel, newDir, files, baseUrl, function (err, slidesPost) {
                     err ? res.send(422, err) : res.send(201, slidesPost);
                   });
                 }
