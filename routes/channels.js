@@ -1,6 +1,7 @@
 var Channel = require('../models/channel').Channel,
     User = require('../models/user').User,
     Event = require('../models/event').Event,
+  TextPost = require('../models/textpost').TextPost,
     passport = require('passport');
 
 // Channel routes
@@ -46,11 +47,21 @@ exports.create = [
     channel.save(function (err) {
       if (err) return res.send(422, err);
 
-      User.populate(channel, {
-        path: 'owner',
-        select: '_id username'
-      }, function (err, channel) {
-        err ? res.send(422, err) : res.send(201, channel);
+      var textPost = new TextPost({
+        _channel: channel._id,
+        content: channel.name + ' channel was created',
+        username: 'Channely'
+      });
+
+      textPost.save(function (err) {
+        if (err) return res.send(422, err);
+
+        User.populate(channel, {
+          path: 'owner',
+          select: '_id username'
+        }, function (err, channel) {
+          err ? res.send(422, err) : res.send(201, channel);
+        });
       });
     });
   }
