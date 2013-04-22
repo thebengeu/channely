@@ -1,5 +1,6 @@
 var Channel = require('../models/channel').Channel,
     User = require('../models/user').User,
+    Event = require('../models/event').Event,
     passport = require('passport');
 
 // Channel routes
@@ -90,8 +91,14 @@ passport.authenticate('bearer', {session: false}),
       else if (channel.owner != req.user._id) {
         res.send(403);
       } else {
-        channel.remove(function () {
-          res.send(204);
+        Event.remove({ _channel: channel._id }, function (err) {
+          if (err) return res.send(500, err);
+
+          channel.remove(function (err) {
+            if (err) return res.send(500, err);
+
+            res.send(204);
+          });
         });
       }
     });
