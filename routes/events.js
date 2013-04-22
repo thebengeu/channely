@@ -78,6 +78,10 @@ exports.search = function (req, res) {
   if (req.query.name) {
     query.name = { $regex: req.query.name, $options: 'i' };
   }
+  if (req.query.occurDateTime) {
+    query.startDateTime = { $lte: req.query.occurDateTime };
+    query.endDateTime = { $gte: req.query.occurDateTime };
+  }
   Event
     .find(query)
     .populate('_channel')
