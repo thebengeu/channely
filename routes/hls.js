@@ -120,6 +120,7 @@ exports.stopRecording = function (req, res) {
 
     hlsRecording.endDate = req.body.endDate;
     hlsRecording.endSeqNo = req.body.endSeqNo;
+    hlsRecording.time = Date.now();
 
     generatePlaylist(hlsRecording, function (err) {
       if (err) return res.send(422, err);
